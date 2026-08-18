@@ -233,7 +233,7 @@ const BodyPage: React.FC = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "900px", margin: "0 auto" }}>
-      <h1>Кузница Тела [Anti-Skuf Engine]</h1>
+      <h1>Кузница Тела АНТИ-СКУФ</h1>
 
       {/* Манифест и формула */}
       <div
@@ -404,7 +404,7 @@ const BodyPage: React.FC = () => {
       </form>
 
 
-      
+
       {/* Журнал замеров */}
       <div>
         <h3 style={{ margin: "0 0 15px 0", fontSize: "16px" }}>Журнал записей</h3>
