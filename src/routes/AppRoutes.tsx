@@ -13,6 +13,7 @@ import { getUserData } from "../services/firebase";
 
 import BodyPage from "../pages/Body__page";
 import TodoListPage from "../pages/TodoList__page";
+import QuestPage from "../pages/Quest__page";
 
 
 export interface AppRouteItem {
@@ -180,6 +181,14 @@ const routeConfig: AppRouteItem[] = [
     isVisibleWhenLoggined: true,
     label: "Таблица Сделать Дела",
   },
+  {
+    path: "/quest_page",
+    element: <QuestPage />,
+    isPrivate: true,
+    isVisibleWhenLoggined: true,
+    label: "Сделать квест (Цепочка дел)",
+  },
+  // <Route path="/quest_page" element={<QuestPage />} />
   // <Route path="/todolist_page" element={<TodoListPage />} />
   {
     path: "/",

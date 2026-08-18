@@ -345,6 +345,37 @@ const DashboardPage: React.FC = () => {
             Открыть канбан →
           </div>
         </Link>
+
+
+        {/* Карточка: Квесты Дисциплины */}
+        <Link
+          to="/quest_page"
+          style={{
+            textDecoration: "none",
+            backgroundColor: "#111",
+            border: "1px solid #00ff1544",
+            borderRadius: "8px",
+            padding: "20px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <span style={{ fontSize: "11px", color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>
+              Дисциплина // Поток
+            </span>
+            <h2 style={{ color: "#00ff15", margin: "8px 0 4px 0", fontSize: "22px" }}>
+              ⚡ Квесты
+            </h2>
+            <p style={{ color: "#aaa", fontSize: "14px", margin: "10px 0 0 0" }}>
+              Пошаговый раннер рутины и базы
+            </p>
+          </div>
+          <div style={{ marginTop: "20px", color: "#00ff15", fontSize: "13px", fontWeight: "bold" }}>
+            Начать квест →
+          </div>
+        </Link>
       </div>
     </div>
   );
