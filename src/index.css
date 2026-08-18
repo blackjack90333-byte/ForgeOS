@@ -1,0 +1,446 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  padding: 0;
+  margin: 0;
+}
+
+
+
+
+
+input,
+button {
+  margin: 5px;
+  padding: 8px;
+  font-size: 16px;
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e1e1e;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+.link-item a {
+  text-decoration: none;
+  color: #00ff15;
+}
+
+.delete-btn {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.delete-btn:hover {
+  background: #b71c1c;
+}
+
+td {
+  width: 50px;
+  height: 20px;
+  text-align: center;
+  position: relative;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+.empty_progress {
+  background-color: #333;
+  width: 100px;
+  height: 20px;
+  border: 1px solid #555;
+}
+
+.progress {
+  background-color: #4caf50;
+  width: 100px;
+  height: 20px;
+  border: 1px solid #555;
+}
+
+.progress-cell {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #555;
+  background-color: #1e1e1e;
+}
+
+.progress-fill {
+  background-color: #00ff15;
+  height: 100%;
+}
+
+.main_wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 768px) {
+  .main_wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+.timers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#progressGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  width: 100%;
+  padding-top: 20px;
+}
+
+.timerContainer_wrap {
+  padding: 10px;
+}
+
+.light_green {
+  color: #00ff15;
+}
+
+
+
+.progressBar_green_boxes_wrap {
+  width: 100%;
+  max-width: 700px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.progressBar_green_box {
+  height: 30px;
+  /* border: 1px solid rgb(85, 85, 85); */
+}
+
+.progressBar_green_box_wrap {
+  height: 30px;
+  /* background: rgb(30, 30, 30); */
+  background: rgb(0, 0, 0);
+  border: 1px solid rgb(85, 85, 85);
+  /* margin: 2px; */
+  /* width: 100px; */
+
+
+}
+
+.nofap_link {
+  padding: 10px;
+  margin-bottom: 10px;
+
+  border-radius: 5px;
+  background-color: rgb(26, 26, 26);
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  /* justify-content: space-between;
+  align-items: center; */
+}
+
+.nofap_link a {
+  text-decoration: none;
+  color: rgb(180, 37, 37);
+  color: rgba(255, 255, 255, 0.37);
+  color: #00ff15;
+  padding-right: 30px;
+  display: flex;
+  align-self: center;
+
+}
+
+
+.nofap_container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* 
+.nofap_container {
+  display: grid;
+  grid-template-columns: 1fr; 
+  gap: 20px;
+} */
+
+
+/* При ширине экрана больше 600px */
+@media (min-width: 801px) {
+  .nofap_container {
+    grid-template-columns: 1fr 1fr;
+    /* 2 колонки */
+  }
+}
+
+.nav_wrap {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  /* margin-top: -15px; */
+  background-color: #000000;
+  display: block;
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.219);
+  /* top: 0; */
+}
+
+.nav_guest {
+  /* text-decoration: none; */
+  color: black;
+  padding: 15px 30px;
+  margin: 0;
+  border-radius: 0;
+  background-color: #00ff15a4;
+  width: fit-content;
+}
+
+.nav_link {
+  text-decoration: none;
+  color: black;
+  padding: 15px 30px;
+  margin: 0;
+  border-radius: 0;
+  background-color: #00ff15;
+  width: fit-content;
+}
+
+.nav_link a {
+  text-decoration: none;
+  color: black;
+}
+
+.nav_link:hover {
+  opacity: 0.7;
+}
+
+.BrowserRouter_wrap {
+  margin: 0;
+  padding: 0;
+}
+
+.current-time {
+  font-size: 16px;
+  color: #00ff15;
+  text-align: right;
+  margin: 0;
+  /* padding: 10px; */
+  padding-left: 20px;
+  align-self: center;
+}
+
+.logout_button {
+  text-decoration: none;
+  color: black;
+  padding: 15px 30px;
+  margin: 0;
+  margin-top: 20px;
+  border-radius: 0;
+  background-color: #00ff15;
+  width: fit-content;
+}
+
+.logout_button:hover {
+  opacity: 0.7;
+}
+
+.login_button {
+  text-decoration: none;
+  color: black;
+  padding: 15px 30px;
+  margin: 0;
+  margin-top: 20px;
+  border-radius: 0;
+  background-color: #00ff15;
+  width: fit-content;
+}
+
+.login_button:hover {
+  opacity: 0.7;
+}
+
+.chartWrap {
+  margin-top: 20px;
+}
+
+.countMoney_container {
+  padding: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+
+@media (min-width: 801px) {
+  .countMoney_container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.chartWrap_chart {
+  width: 90vw;
+  height: 200px;
+  margin: 0;
+  padding: 10px 10px 10px 0;
+  background-color: #000000;
+}
+
+@media (min-width: 801px) {
+  .chartWrap_chart {
+    width: 50vw;
+    height: 200px;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* GoalsList.css */
+
+/* Общий контейнер для цели */
+.goal-container {
+  border: 1px solid #444;
+  max-width: 400px;
+  /* Темная граница */
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  background-color: #222;
+  /* Темный фон */
+  color: #fff;
+  /* Белый текст */
+}
+
+.goal-container-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Заголовок цели */
+.goal-container-header h3 {
+  /* margin: 0 0 5px 0; */
+  margin: 0;
+  font-size: 18px;
+  color: #00ff15;
+  /* Ярко-зеленый заголовок */
+}
+
+/* Цена цели */
+.goal-container p {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  color: #ccc;
+  /* Светло-серый текст */
+}
+
+/* Контейнер для прогресс-бара */
+.progress-bar-container {
+  width: 100%;
+  height: 20px;
+  background-color: #333;
+  /* Темный фон прогресс-бара */
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+/* Прогресс-бар */
+.progress-bar {
+  height: 100%;
+  background-color: #00ff15;
+  /* Ярко-зеленый цвет прогресса */
+  transition: width 0.3s ease;
+  /* Плавная анимация */
+}
+
+/* Дополнительные стили для индикации прогресса */
+.progress-bar-low {
+  background-color: #ff4444;
+  /* Красный для низкого прогресса */
+}
+
+.progress-bar-medium {
+  background-color: #ffeb3b;
+  /* Желтый для среднего прогресса */
+}
+
+.progress-bar-high {
+  background-color: #00ff15;
+  /* Ярко-зеленый для высокого прогресса */
+}
+
+
+/* Кнопка удаления */
+.delete-goal-button {
+  /* background-color: #ff4444; */
+  /* Красный фон */
+  color: #fff;
+  margin-left: 20px;
+  /* Белый текст */
+  border: none;
+  /* Без границы */
+  padding: 5px 10px;
+  /* Внутренние отступы */
+  border-radius: 5px;
+  /* Закругленные углы */
+  cursor: pointer;
+  /* Курсор указывает на кликабельность */
+  font-size: 14px;
+  /* Размер шрифта */
+  /* margin-top: 10px; */
+  /* Отступ сверху */
+  transition: background-color 0.3s ease;
+  /* Плавное изменение цвета */
+}
+
+.delete-goal-button:hover {
+  background-color: #cc0000;
+  /* Темно-красный при наведении */
+}
