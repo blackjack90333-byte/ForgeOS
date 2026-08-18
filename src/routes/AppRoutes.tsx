@@ -64,83 +64,83 @@ const Header: React.FC<HeaderProps> = ({ routes }) => {
   );
 };
 
-const MainPage: React.FC = () => {
-  const user = useAppSelector((state) => state.auth.user);
-  const visibleRoutes = routeConfig.filter(
-    (item) => item.path !== "/" && (!item.isPrivate || Boolean(user))
-  );
+// const MainPage: React.FC = () => {
+//   const user = useAppSelector((state) => state.auth.user);
+//   const visibleRoutes = routeConfig.filter(
+//     (item) => item.path !== "/" && (!item.isPrivate || Boolean(user))
+//   );
 
-  React.useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user?.uid) return;
-      try {
-        const data = await getUserData(user.uid);
-        console.log("data", data);
-      } catch (err) {
-        console.error("Ошибка при получении данных на главной:", err);
-      }
-    };
+//   React.useEffect(() => {
+//     const fetchUserData = async () => {
+//       if (!user?.uid) return;
+//       try {
+//         const data = await getUserData(user.uid);
+//         console.log("data", data);
+//       } catch (err) {
+//         console.error("Ошибка при получении данных на главной:", err);
+//       }
+//     };
 
-    fetchUserData();
-  }, [user?.uid]);
+//     fetchUserData();
+//   }, [user?.uid]);
 
-  return (
-    <div style={{ padding: "10px" }}>
-      {user && (
-        <div style={{ marginBottom: "10px" }}>
-          <p>
-            <strong>Email:</strong> {user.email}
-          </p>
-          <p>
-            <strong>Имя:</strong> {user.displayName}
-          </p>
-          {user.photoURL && (
-            <img
-              src={user.photoURL}
-              alt="Avatar"
-              style={{ width: "50px", borderRadius: "50%" }}
-            />
-          )}
-        </div>
-      )}
+//   return (
+//     <div style={{ padding: "10px" }}>
+//       {user && (
+//         <div style={{ marginBottom: "10px" }}>
+//           <p>
+//             <strong>Email:</strong> {user.email}
+//           </p>
+//           <p>
+//             <strong>Имя:</strong> {user.displayName}
+//           </p>
+//           {user.photoURL && (
+//             <img
+//               src={user.photoURL}
+//               alt="Avatar"
+//               style={{ width: "50px", borderRadius: "50%" }}
+//             />
+//           )}
+//         </div>
+//       )}
 
-      <div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          {visibleRoutes.map((route, index) => {
-            if (user && route.isVisibleWhenLoggined) {
-              return (
-                <Link to={route.path} key={route.path || index}>
-                  <button className="nav_link">
-                    {route.label || route.path}
-                  </button>
-                </Link>
-              );
-            } else if (!user && !route.isVisibleWhenLoggined) {
-              return (
-                <div key={route.path || index}>
-                  <Link
-                    to={route.path}
-                    style={{
-                      textDecoration: "none",
-                      color: "blue",
-                      padding: "5px 10px",
-                      border: "1px solid #ccc",
-                      borderRadius: "5px",
-                      backgroundColor: "#fff",
-                    }}
-                  >
-                    {route.label || route.path}
-                  </Link>
-                </div>
-              );
-            }
-            return <div key={route.path || index} />;
-          })}
-        </div>
-      </div>
-    </div>
-  );
-};
+//       <div>
+//         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+//           {visibleRoutes.map((route, index) => {
+//             if (user && route.isVisibleWhenLoggined) {
+//               return (
+//                 <Link to={route.path} key={route.path || index}>
+//                   <button className="nav_link">
+//                     {route.label || route.path}
+//                   </button>
+//                 </Link>
+//               );
+//             } else if (!user && !route.isVisibleWhenLoggined) {
+//               return (
+//                 <div key={route.path || index}>
+//                   <Link
+//                     to={route.path}
+//                     style={{
+//                       textDecoration: "none",
+//                       color: "blue",
+//                       padding: "5px 10px",
+//                       border: "1px solid #ccc",
+//                       borderRadius: "5px",
+//                       backgroundColor: "#fff",
+//                     }}
+//                   >
+//                     {route.label || route.path}
+//                   </Link>
+//                 </div>
+//               );
+//             }
+//             return <div key={route.path || index} />;
+//           })}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 
 const routeConfig: AppRouteItem[] = [
   {

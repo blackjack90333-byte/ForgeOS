@@ -120,7 +120,8 @@ const DashboardPage: React.FC = () => {
       {/* Шапка дашборда */}
       <div style={{ marginBottom: "25px", borderBottom: "1px solid #222", paddingBottom: "15px" }}>
         <h1 style={{ margin: 0, fontSize: "28px", letterSpacing: "1px" }}>
-          FORGE<span style={{ color: "#00ff15" }}>OS</span> // КОНТРОЛЬ
+          {/* FORGE<span style={{ color: "#00ff15" }}>OS</span> // КОНТРОЛЬ */}
+          FORGE<span style={{ color: "#00ff15" }}>OS</span> {"//"} КОНТРОЛЬ
         </h1>
         <span style={{ color: "#666", fontSize: "13px", fontFamily: "monospace" }}>
           [STATUS: OPERATIONAL] • СВОДКА ПО КЛЮЧЕВЫМ РЕСУРСАМ
@@ -159,7 +160,8 @@ const DashboardPage: React.FC = () => {
                 letterSpacing: "1px",
               }}
             >
-              Дисциплина // Дофамин
+              {/* Дисциплина // Дофамин */}
+              Дисциплина {"//"} Дофамин
             </span>
             <h2 style={{ color: nofapRank.color, margin: "8px 0 4px 0", fontSize: "22px" }}>
               {nofapRank.badge} {nofapRank.title}
@@ -207,7 +209,7 @@ const DashboardPage: React.FC = () => {
                 letterSpacing: "1px",
               }}
             >
-              Физическая форма // Тело
+              Физическая форма {"//"} Тело
             </span>
             <h2
               style={{
@@ -254,7 +256,7 @@ const DashboardPage: React.FC = () => {
                 letterSpacing: "1px",
               }}
             >
-              Капитал // Финансы
+              Капитал {"//"} Финансы
             </span>
             <h2 style={{ color: "#00ff15", margin: "8px 0 4px 0", fontSize: "22px" }}>
               {moneySum.toLocaleString("ru-RU")} ₽
