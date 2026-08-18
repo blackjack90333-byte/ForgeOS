@@ -295,6 +295,15 @@ const BodyPage: React.FC = () => {
         </div>
       </div>
 
+
+      {/* График динамики */}
+      {metrics.length > 1 && (
+        <div style={{ backgroundColor: "#111", padding: "20px", borderRadius: "8px", marginBottom: "30px" }}>
+          <h3 style={{ margin: "0 0 15px 0", fontSize: "16px" }}>Динамика Скуфометра</h3>
+          <Line data={chartData} options={chartOptions} />
+        </div>
+      )}
+
       {/* Форма фиксации замера со всеми параметрами в одном окне */}
       <form
         onSubmit={handleAddMetric}
@@ -394,14 +403,8 @@ const BodyPage: React.FC = () => {
         </button>
       </form>
 
-      {/* График динамики */}
-      {metrics.length > 1 && (
-        <div style={{ backgroundColor: "#111", padding: "20px", borderRadius: "8px", marginBottom: "30px" }}>
-          <h3 style={{ margin: "0 0 15px 0", fontSize: "16px" }}>Динамика Скуфометра</h3>
-          <Line data={chartData} options={chartOptions} />
-        </div>
-      )}
 
+      
       {/* Журнал замеров */}
       <div>
         <h3 style={{ margin: "0 0 15px 0", fontSize: "16px" }}>Журнал записей</h3>
