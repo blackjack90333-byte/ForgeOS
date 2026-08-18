@@ -12,6 +12,7 @@ import Logout from "../pages/Logout__page";
 import { getUserData } from "../services/firebase";
 
 import BodyPage from "../pages/Body__page";
+import TodoListPage from "../pages/TodoList__page";
 
 
 export interface AppRouteItem {
@@ -172,6 +173,14 @@ const routeConfig: AppRouteItem[] = [
     isVisibleWhenLoggined: true,
     label: "Трекер воздержания",
   },
+  {
+    path: "/todolist_page",
+    element: <TodoListPage />,
+    isPrivate: true,
+    isVisibleWhenLoggined: true,
+    label: "Таблица Сделать Дела",
+  },
+  // <Route path="/todolist_page" element={<TodoListPage />} />
   {
     path: "/",
     element: <DashboardPage />,

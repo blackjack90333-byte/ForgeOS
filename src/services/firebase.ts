@@ -18,7 +18,16 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { NofapLink, UserDocument,BodyMetric } from "../types";
+import { NofapLink, UserDocument,BodyMetric,EisenhowerTask } from "../types";
+// В src/services/firebase.ts
+// import { EisenhowerTask } from "../types";
+
+export const saveEisenhowerTasks = async (userId: string, tasks: EisenhowerTask[]) => {
+  const userDocRef = doc(db, "users", userId);
+  await updateDoc(userDocRef, {
+    eisenhower_tasks: JSON.stringify(tasks),
+  });
+};
 // import { BodyMetric } from "../types";
 
 const firebaseConfig = {

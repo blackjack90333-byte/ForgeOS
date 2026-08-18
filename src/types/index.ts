@@ -29,6 +29,16 @@ export interface MoneyGoal {
 }
 
 // Обновленный документ Firestore
+// export interface UserDocument {
+//   displayName: string | null;
+//   email: string | null;
+//   photoURL: string | null;
+//   nofap_timestamp?: number;
+//   nofap_links?: NofapLink[];
+//   money_count?: MoneyCount;
+//   money_history?: string; // сериализованный JSON массив MoneyHistoryItem[]
+//   money_goals?: string;   // сериализованный JSON массив MoneyGoal[]
+// }
 export interface UserDocument {
   displayName: string | null;
   email: string | null;
@@ -38,6 +48,7 @@ export interface UserDocument {
   money_count?: MoneyCount;
   money_history?: string; // сериализованный JSON массив MoneyHistoryItem[]
   money_goals?: string;   // сериализованный JSON массив MoneyGoal[]
+  eisenhower_tasks?: string; // <--- ДОБАВЬ ЭТУ СТРОКУ
 }
 
 export interface BodyMetric {
@@ -48,6 +59,17 @@ export interface BodyMetric {
   caliper?: number; // Складка в мм
   note?: string; // Заметка
   timestamp: number;
+}
+
+export type TaskQuadrant = "inbox" | "q1_urgent_important" | "q2_not_urgent_important" | "q3_urgent_not_important" | "q4_not_urgent_not_important";
+export type TaskStatus = "todo" | "in_progress" | "done";
+
+export interface EisenhowerTask {
+  id: string;
+  title: string;
+  quadrant: TaskQuadrant;
+  status: TaskStatus;
+  createdAt: number;
 }
 
 // Дополни поле в UserDocument:

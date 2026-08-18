@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
 import { getUserData } from "../services/firebase";
 import { calculateAdvancedSkufIndex } from "./Body__page";
-import { MoneyGoal } from "../types";
+import { MoneyGoal, EisenhowerTask } from "../types";
 
 const getNoFapRank = (days: number) => {
   if (days >= 90) return { title: "Титан", color: "#e056fd", badge: "🌌" };
@@ -108,20 +108,31 @@ const DashboardPage: React.FC = () => {
       ? Math.min(100, (moneySum / currentGoal.price) * 100)
       : 0;
 
+  // 4. Задачи (TodoList)
+  let tasks: EisenhowerTask[] = [];
+  if (data?.eisenhower_tasks) {
+    try {
+      tasks = JSON.parse(data.eisenhower_tasks);
+    } catch {
+      tasks = [];
+    }
+  }
+  const pendingTasksCount = tasks.filter((t) => t.status !== "done").length;
+  const q1Count = tasks.filter((t) => t.quadrant === "q1_urgent_important" && t.status !== "done").length;
+
   return (
     <div
       style={{
         padding: "20px",
         fontFamily: "Arial, sans-serif",
-        maxWidth: "900px",
+        maxWidth: "950px",
         margin: "0 auto",
       }}
     >
       {/* Шапка дашборда */}
       <div style={{ marginBottom: "25px", borderBottom: "1px solid #222", paddingBottom: "15px" }}>
         <h1 style={{ margin: 0, fontSize: "28px", letterSpacing: "1px" }}>
-          {/* FORGE<span style={{ color: "#00ff15" }}>OS</span> // КОНТРОЛЬ */}
-          FORGE<span style={{ color: "#00ff15" }}>OS</span> {"//"} 
+          FORGE<span style={{ color: "#00ff15" }}>OS</span>
         </h1>
         <span style={{ color: "#666", fontSize: "13px", fontFamily: "monospace" }}>
           КЛЮЧЕВАЯ СВОДКА
@@ -160,7 +171,6 @@ const DashboardPage: React.FC = () => {
                 letterSpacing: "1px",
               }}
             >
-              {/* Дисциплина // Дофамин */}
               Моральное состояние
             </span>
             <h2 style={{ color: nofapRank.color, margin: "8px 0 4px 0", fontSize: "22px" }}>
@@ -209,7 +219,7 @@ const DashboardPage: React.FC = () => {
                 letterSpacing: "1px",
               }}
             >
-              Физическое состяние
+              Физическое состояние
             </span>
             <h2
               style={{
@@ -291,6 +301,48 @@ const DashboardPage: React.FC = () => {
           </div>
           <div style={{ marginTop: "20px", color: "#00ff15", fontSize: "13px", fontWeight: "bold" }}>
             Управление капиталом →
+          </div>
+        </Link>
+
+        {/* Карточка: Дела & Фокус */}
+        <Link
+          to="/todolist_page"
+          style={{
+            textDecoration: "none",
+            backgroundColor: "#111",
+            border: "1px solid #3498db44",
+            borderRadius: "8px",
+            padding: "20px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <span
+              style={{
+                fontSize: "11px",
+                color: "#888",
+                textTransform: "uppercase",
+                letterSpacing: "1px",
+              }}
+            >
+              Задачи &amp; Фокус
+            </span>
+            <h2 style={{ color: "#3498db", margin: "8px 0 4px 0", fontSize: "22px" }}>
+              📋 Матрица Дел
+            </h2>
+            <div style={{ marginTop: "10px", fontSize: "14px", color: "#aaa" }}>
+              В работе: <strong style={{ color: "#fff" }}>{pendingTasksCount}</strong>
+              {q1Count > 0 && (
+                <span style={{ color: "#ff4d4d", marginLeft: "8px" }}>
+                  (Срочно: {q1Count})
+                </span>
+              )}
+            </div>
+          </div>
+          <div style={{ marginTop: "20px", color: "#3498db", fontSize: "13px", fontWeight: "bold" }}>
+            Открыть канбан →
           </div>
         </Link>
       </div>
