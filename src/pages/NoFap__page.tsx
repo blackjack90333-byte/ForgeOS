@@ -7,7 +7,7 @@ import {
   updateUserData,
 } from "../services/firebase";
 import { useAppSelector } from "../redux/store";
-import { NofapLink } from "../types";
+import { NofapLink, RelapseRecord } from "../types";
 
 interface Milestone {
   days: number;
@@ -40,7 +40,9 @@ const formatTimestamp = (timestamp: number): string => {
   const day = date.getDate();
   const month = date.toLocaleString("ru", { month: "long" });
   const year = date.getFullYear();
-  return `${day} ${month} ${year}`;
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${day} ${month} ${year}, ${hours}:${minutes}`;
 };
 
 const calculateTimeDifference = (timestamp: number, now: number): string => {
@@ -211,6 +213,12 @@ const NoFapPage: React.FC = () => {
   const [newLink, setNewLink] = useState<string>("");
   const [newLinkNote, setNewLinkNote] = useState<string>("");
 
+  // Состояние Дневника срывов
+  const [relapses, setRelapses] = useState<RelapseRecord[]>([]);
+  const [showRelapseModal, setShowRelapseModal] = useState<boolean>(false);
+  const [relapseReason, setRelapseReason] = useState<string>("");
+  const [relapseLesson, setRelapseLesson] = useState<string>("");
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user?.uid) return;
@@ -220,6 +228,13 @@ const NoFapPage: React.FC = () => {
           setNofapTimestamp(Number(data.nofap_timestamp) || 0);
           if (data.nofap_links) {
             setLinks(data.nofap_links);
+          }
+          if ((data as any).nofap_relapses) {
+            try {
+              setRelapses(JSON.parse((data as any).nofap_relapses));
+            } catch {
+              setRelapses([]);
+            }
           }
         }
       } catch (err) {
@@ -250,7 +265,6 @@ const NoFapPage: React.FC = () => {
   const handleRemoveLink = async (linkToRemove: NofapLink) => {
     if (!user?.uid) return;
 
-    // Окно подтверждения с кнопками ОК / Отмена
     const isConfirmed = window.confirm(
       `Удалить ссылку "${linkToRemove.note || linkToRemove.link}"?`
     );
@@ -300,17 +314,50 @@ const NoFapPage: React.FC = () => {
     }
   };
 
-  const wipeNofap = async () => {
+  // Открытие модалки фиксации срыва
+  const handleOpenRelapseModal = () => {
+    setShowRelapseModal(true);
+  };
+
+  // Подтверждение срыва и запись в дневник
+  const confirmRelapseAndReset = async () => {
     if (!user?.uid) return;
-    const isConfirmed = window.confirm("Сбросить текущий прогресс?");
-    if (!isConfirmed) return;
+
+    const durationStr = calculateTimeDifference(nofapTimestamp, Date.now());
+    const newRecord: RelapseRecord = {
+      id: `${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      timestamp: Date.now(),
+      durationFormatted: durationStr,
+      reason: relapseReason.trim() || "Причина не указана (импульс)",
+      lesson: relapseLesson.trim() || "Сделать выводы и двигаться дальше",
+    };
+
+    const updatedRelapses = [newRecord, ...relapses];
 
     try {
+      // Сбрасываем таймер в 0 и записываем лог в базу
       await updateUserData(user.uid, "nofap_timestamp", 0);
+      await updateUserData(user.uid, "nofap_relapses" as any, JSON.stringify(updatedRelapses));
+
       setNofapTimestamp(0);
+      setRelapses(updatedRelapses);
+      setShowRelapseModal(false);
+      setRelapseReason("");
+      setRelapseLesson("");
     } catch (error) {
-      console.error("Ошибка при сбросе таймера:", error);
+      console.error("Ошибка при фиксации срыва:", error);
     }
+  };
+
+  // Удаление записи из дневника срывов
+  const handleDeleteRelapse = async (id: string) => {
+    if (!user?.uid) return;
+    const isConfirmed = window.confirm("Удалить эту запись из журнала срывов?");
+    if (!isConfirmed) return;
+
+    const filtered = relapses.filter((r) => r.id !== id);
+    setRelapses(filtered);
+    await updateUserData(user.uid, "nofap_relapses" as any, JSON.stringify(filtered));
   };
 
   if (isLoading) {
@@ -322,83 +369,78 @@ const NoFapPage: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "950px", margin: "0 auto" }}>
       <div className="nofap_container">
         <div>
-            <h1>Трекер воздержания</h1>
+          <h1>Трекер воздержания</h1>
+
+          {/* Правила */}
+          <div
+            style={{
+              marginBottom: "25px",
+              fontFamily: "monospace",
+              color: "#e0e0e0",
+            }}
+          >
             <div
-                style={{
-                    // backgroundColor: "#0d1a0e",
-                    // border: "1px solid #1c3b20",
-                    // borderLeft: "4px solid #00ff15",
-                    // borderRadius: "8px",
-                    // padding: "20px 24px",
-                    marginBottom: "25px",
-                    fontFamily: "monospace",
-                    color: "#e0e0e0",
-                }}
-                >
-                <div
-                    style={{
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    color: "#00ff15",
-                    letterSpacing: "1.5px",
-                    textTransform: "uppercase",
-                    marginBottom: "16px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    }}
-                >
-                    Правила:
-                </div>
+              style={{
+                fontSize: "18px",
+                fontWeight: "bold",
+                color: "#00ff15",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase",
+                marginBottom: "16px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              Правила:
+            </div>
 
-                <div
-                    style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-                    gap: "10px 24px",
-                    fontSize: "15px",
-                    lineHeight: "1.6",
-                    }}
-                >
-                    <div style={{ padding: "4px 0" }}>
-                    <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>01.</span>
-                    Не смотреть порно
-                    </div>
-                    <div style={{ padding: "4px 0" }}>
-                    <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>02.</span>
-                    Не фантазировать и не уходить в иллюзии
-                    </div>
-                    <div style={{ padding: "4px 0" }}>
-                    <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>03.</span>
-                    Не смотреть эротику / NSFW
-                    </div>
-                    <div style={{ padding: "4px 0" }}>
-                    <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>04.</span>
-                    Не играть в 18+ игры
-                    </div>
-                    <div style={{ padding: "4px 0" }}>
-                    <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>05.</span>
-                    Не чекать TG-каналы с адалтом
-                    </div>
-                    <div style={{ padding: "4px 0" }}>
-                    <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>06.</span>
-                    Не листать паблики VK с эротикой
-                    </div>
-                    <div style={{ padding: "4px 0" }}>
-                    <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>07.</span>
-                    Не серфить адалт-сайты и треды
-                    </div>
-                    <div style={{ padding: "4px 0" }}>
-                    <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>08.</span>
-                    Драйв Энергию переводить в физуху
-                    </div>
-                </div>
-                </div>
-
-
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+                gap: "10px 24px",
+                fontSize: "15px",
+                lineHeight: "1.6",
+              }}
+            >
+              <div style={{ padding: "4px 0" }}>
+                <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>01.</span>
+                Не смотреть порно
+              </div>
+              <div style={{ padding: "4px 0" }}>
+                <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>02.</span>
+                Не фантазировать и не уходить в иллюзии
+              </div>
+              <div style={{ padding: "4px 0" }}>
+                <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>03.</span>
+                Не смотреть эротику / NSFW
+              </div>
+              <div style={{ padding: "4px 0" }}>
+                <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>04.</span>
+                Не играть в 18+ игры
+              </div>
+              <div style={{ padding: "4px 0" }}>
+                <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>05.</span>
+                Не чекать TG-каналы с адалтом
+              </div>
+              <div style={{ padding: "4px 0" }}>
+                <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>06.</span>
+                Не листать паблики VK с эротикой
+              </div>
+              <div style={{ padding: "4px 0" }}>
+                <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>07.</span>
+                Не серфить адалт-сайты и треды
+              </div>
+              <div style={{ padding: "4px 0" }}>
+                <span style={{ color: "#00ff15", fontWeight: "bold", marginRight: "8px" }}>08.</span>
+                Драйв Энергию переводить в физуху
+              </div>
+            </div>
+          </div>
 
           {nofapTimestamp > 0 ? (
             <>
@@ -406,13 +448,20 @@ const NoFapPage: React.FC = () => {
 
               <div style={{ marginBottom: "20px" }}>
                 <button
-                  onClick={wipeNofap}
+                  onClick={handleOpenRelapseModal}
                   style={{
                     marginTop: "30px",
                     cursor: "pointer",
+                    backgroundColor: "#2a1111",
+                    color: "#ff4d4d",
+                    border: "1px solid #ff4d4d88",
+                    padding: "10px 18px",
+                    borderRadius: "6px",
+                    fontWeight: "bold",
+                    fontSize: "14px",
                   }}
                 >
-                  Подрочил / Посмотрел порно (Сброс)
+                  Подрочил / Посмотрел порно (Зафиксировать срыв)
                 </button>
               </div>
             </>
@@ -426,7 +475,7 @@ const NoFapPage: React.FC = () => {
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    style={{ marginLeft: "10px" }}
+                    style={{ marginLeft: "10px", padding: "6px" }}
                   />
                 </label>
               </div>
@@ -437,17 +486,17 @@ const NoFapPage: React.FC = () => {
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    style={{ marginLeft: "10px" }}
+                    style={{ marginLeft: "10px", padding: "6px" }}
                   />
                 </label>
               </div>
 
-              <button onClick={startNofapNow} style={{ padding: "5px 10px" }}>
+              <button onClick={startNofapNow} style={{ padding: "8px 14px", cursor: "pointer", backgroundColor: "#00ff15", color: "#000", fontWeight: "bold", border: "none", borderRadius: "4px" }}>
                 Начать воздержание сейчас
               </button>
               <button
                 onClick={startNofapFromDate}
-                style={{ padding: "5px 10px", marginLeft: "10px" }}
+                style={{ padding: "8px 14px", marginLeft: "10px", cursor: "pointer", backgroundColor: "#1f1f1f", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}
               >
                 Уже воздерживаюсь
               </button>
@@ -455,7 +504,120 @@ const NoFapPage: React.FC = () => {
           )}
         </div>
 
-        <div style={{ marginBottom: "50px", marginTop: "40px" }}>
+        {/* Модальное окно фиксации срыва */}
+        {showRelapseModal && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.85)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000,
+              padding: "20px",
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#111",
+                border: "2px solid #ff4d4d",
+                borderRadius: "10px",
+                padding: "24px",
+                maxWidth: "520px",
+                width: "100%",
+                boxShadow: "0 0 30px rgba(255, 77, 77, 0.2)",
+              }}
+            >
+              <h2 style={{ margin: "0 0 10px 0", color: "#ff4d4d", fontSize: "20px" }}>
+                🛑 РАЗБОР СРЫВА // АНАЛИЗ ОШИБКИ
+              </h2>
+              <p style={{ color: "#aaa", fontSize: "14px", margin: "0 0 15px 0" }}>
+                Срыв — это данные для анализа. Запиши, что именно спровоцировало импульс, чтобы защититься от этого в будущем.
+              </p>
+
+              <div style={{ marginBottom: "14px" }}>
+                <label style={{ display: "block", color: "#888", fontSize: "12px", textTransform: "uppercase", marginBottom: "6px" }}>
+                  1. Что стало триггером / причиной срыва?
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Например: листал телеграм перед сном, скука, сильный стресс, остался один без дел..."
+                  value={relapseReason}
+                  onChange={(e) => setRelapseReason(e.target.value)}
+                  style={{
+                    width: "100%",
+                    boxSizing: "border-box",
+                    backgroundColor: "#1a1a1a",
+                    border: "1px solid #333",
+                    color: "#fff",
+                    padding: "10px",
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", color: "#888", fontSize: "12px", textTransform: "uppercase", marginBottom: "6px" }}>
+                  2. Вывод / Что сделаешь по-другому?
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Например: удалил канал, телефон на ночь кладу в другую комнату, сразу иду отжиматься..."
+                  value={relapseLesson}
+                  onChange={(e) => setRelapseLesson(e.target.value)}
+                  style={{
+                    width: "100%",
+                    boxSizing: "border-box",
+                    backgroundColor: "#1a1a1a",
+                    border: "1px solid #333",
+                    color: "#00ff15",
+                    padding: "10px",
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                  }}
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+                <button
+                  onClick={() => setShowRelapseModal(false)}
+                  style={{
+                    backgroundColor: "#222",
+                    color: "#aaa",
+                    border: "none",
+                    padding: "10px 16px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={confirmRelapseAndReset}
+                  style={{
+                    backgroundColor: "#ff4d4d",
+                    color: "#fff",
+                    border: "none",
+                    padding: "10px 18px",
+                    borderRadius: "4px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  Записать в дневник и сбросить счетчик
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* База знаний */}
+        <div style={{ marginBottom: "40px", marginTop: "30px" }}>
           <h2>База знаний &amp; Фокус</h2>
           <div style={{ marginBottom: "10px" }}>
             <input
@@ -488,6 +650,91 @@ const NoFapPage: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {/* СНИЗУ ЭКРАНА: ДНЕВНИК И ЖУРНАЛ СРЫВОВ */}
+        <div
+          style={{
+            marginTop: "40px",
+            borderTop: "1px solid #222",
+            paddingTop: "25px",
+            marginBottom: "50px",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: "20px", color: "#ff4d4d" }}>
+                📓 Дневник срывов &amp; Анализ триггеров
+              </h2>
+              <span style={{ fontSize: "12px", color: "#666" }}>
+                Всего зафиксировано: {relapses.length}
+              </span>
+            </div>
+          </div>
+
+          {relapses.length === 0 ? (
+            <div
+              style={{
+                backgroundColor: "#0d0d0d",
+                border: "1px dashed #222",
+                borderRadius: "8px",
+                padding: "20px",
+                textAlign: "center",
+                color: "#666",
+                fontSize: "14px",
+              }}
+            >
+              Срывов не зафиксировано. Держи линию обороны! 🛡️
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {relapses.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    backgroundColor: "#111",
+                    border: "1px solid #222",
+                    borderLeft: "4px solid #ff4d4d",
+                    borderRadius: "6px",
+                    padding: "14px 16px",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <div>
+                      <span style={{ color: "#ff4d4d", fontWeight: "bold", fontSize: "14px" }}>
+                        {formatTimestamp(item.timestamp)}
+                      </span>
+                      <span style={{ color: "#888", fontSize: "12px", marginLeft: "10px" }}>
+                        (Прерван стрик: <strong style={{ color: "#fff" }}>{item.durationFormatted}</strong>)
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteRelapse(item.id)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "#555",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                      }}
+                      title="Удалить запись"
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <div style={{ fontSize: "14px", color: "#ddd", marginBottom: "6px" }}>
+                    <strong style={{ color: "#ff8080" }}>Триггер:</strong> {item.reason}
+                  </div>
+
+                  <div style={{ fontSize: "13px", color: "#aaa" }}>
+                    <strong style={{ color: "#00ff15" }}>Вывод на будущее:</strong> {item.lesson}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );

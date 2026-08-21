@@ -28,6 +28,20 @@ export interface MoneyGoal {
   price: number;
 }
 
+export interface RelapseRecord {
+  id: string;
+  timestamp: number;
+  durationFormatted: string;
+  reason: string;
+  lesson: string;
+}
+
+// В UserDocument:
+// export interface UserDocument {
+//   // ... твои поля
+//   nofap_relapses?: string; // JSON строка RelapseRecord[]
+// }
+
 // Обновленный документ Firestore
 // export interface UserDocument {
 //   displayName: string | null;
@@ -49,6 +63,7 @@ export interface UserDocument {
   money_history?: string; // сериализованный JSON массив MoneyHistoryItem[]
   money_goals?: string;   // сериализованный JSON массив MoneyGoal[]
   eisenhower_tasks?: string; // <--- ДОБАВЬ ЭТУ СТРОКУ
+  nofap_relapses?: string; // JSON строка RelapseRecord[]
 }
 
 export interface BodyMetric {
