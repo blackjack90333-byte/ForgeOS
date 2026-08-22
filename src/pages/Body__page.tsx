@@ -1,5 +1,5 @@
 // src/pages/Body__page.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAppSelector } from "../redux/store";
 import { getUserData, addBodyMetric, removeBodyMetric } from "../services/firebase";
 import { BodyMetric } from "../types";
@@ -81,6 +81,11 @@ const getSkufStatus = (index: number) => {
   return { title: "Скуф-мод", color: "#ff4d4d", badge: "🛑", bg: "#260d0d" };
 };
 
+const SOUND_TRACKS = [
+  "/sound/ne_zabrasyvay_trenirovky.mp3",
+  "/sound/ne_zabrasyvay_trenirovky_2.mp3",
+];
+
 const BodyPage: React.FC = () => {
   const user = useAppSelector((state) => state.auth.user);
   const [metrics, setMetrics] = useState<BodyMetric[]>([]);
@@ -93,6 +98,63 @@ const BodyPage: React.FC = () => {
   const [caliper, setCaliper] = useState<string>("");
   const [note, setNote] = useState<string>("");
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasPlayedRef = useRef<boolean>(false);
+
+  // Функция случайного воспроизведения
+  const playRandomSound = () => {
+    try {
+      const randomIndex = Math.floor(Math.random() * SOUND_TRACKS.length);
+      const chosenTrack = SOUND_TRACKS[randomIndex];
+
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+
+      const audio = new Audio(chosenTrack);
+      audio.volume = 0.85;
+      audioRef.current = audio;
+
+      audio.play().then(() => {
+        hasPlayedRef.current = true;
+      }).catch((e) => {
+        console.log("Автоплей ожидает взаимодействия пользователя:", e);
+      });
+    } catch (err) {
+      console.error("Ошибка аудио:", err);
+    }
+  };
+
+  // Автовоспроизведение через 1 секунду после загрузки
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!hasPlayedRef.current) {
+        playRandomSound();
+      }
+    }, 1000);
+
+    // Слушатель на случай, если браузер заблокировал строгий автоплей
+    const handleFirstUserInteraction = () => {
+      if (!hasPlayedRef.current) {
+        playRandomSound();
+      }
+      window.removeEventListener("click", handleFirstUserInteraction);
+      window.removeEventListener("touchstart", handleFirstUserInteraction);
+    };
+
+    window.addEventListener("click", handleFirstUserInteraction);
+    window.addEventListener("touchstart", handleFirstUserInteraction);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("click", handleFirstUserInteraction);
+      window.removeEventListener("touchstart", handleFirstUserInteraction);
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const loadUserData = async () => {
       if (!user?.uid) return;
@@ -101,7 +163,6 @@ const BodyPage: React.FC = () => {
         if (data && (data as any).body_metrics) {
           const sorted = [...(data as any).body_metrics].sort((a, b) => a.timestamp - b.timestamp);
           setMetrics(sorted);
-          // Подставляем последний рост по умолчанию для удобства
           if (sorted.length > 0 && sorted[sorted.length - 1].height) {
             setHeight(String(sorted[sorted.length - 1].height));
           }
@@ -164,7 +225,6 @@ const BodyPage: React.FC = () => {
   const currentCalc = calculateAdvancedSkufIndex(currentWeight, currentCaliper, currentHeight);
   const status = getSkufStatus(currentCalc.index);
 
-  // Конфиг графика
   // Конфиг графика: ТОЛЬКО Скуфометр
   const chartData = {
     labels: metrics.map((m) => m.date),
@@ -190,7 +250,7 @@ const BodyPage: React.FC = () => {
     responsive: true,
     plugins: {
       legend: {
-        display: false, // скрываем легенду, так как линия всего одна
+        display: false,
       },
       tooltip: {
         callbacks: {
@@ -233,7 +293,25 @@ const BodyPage: React.FC = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "900px", margin: "0 auto" }}>
-      <h1>Кузница Тела АНТИ-СКУФ</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+        <h1 style={{ margin: 0 }}>Кузница Тела АНТИ-СКУФ</h1>
+        <button
+          onClick={playRandomSound}
+          title="Слушать мотивацию Диего"
+          style={{
+            backgroundColor: "#161616",
+            border: "1px solid #00ff1544",
+            color: "#00ff15",
+            padding: "6px 12px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          🔊 Диего: Не забрасывай!
+        </button>
+      </div>
 
       {/* Манифест и формула */}
       <div
@@ -295,7 +373,6 @@ const BodyPage: React.FC = () => {
         </div>
       </div>
 
-
       {/* График динамики */}
       {metrics.length > 1 && (
         <div style={{ backgroundColor: "#111", padding: "20px", borderRadius: "8px", marginBottom: "30px" }}>
@@ -304,7 +381,7 @@ const BodyPage: React.FC = () => {
         </div>
       )}
 
-      {/* Форма фиксации замера со всеми параметрами в одном окне */}
+      {/* Форма фиксации замера */}
       <form
         onSubmit={handleAddMetric}
         style={{
@@ -402,8 +479,6 @@ const BodyPage: React.FC = () => {
           + Зафиксировать форму
         </button>
       </form>
-
-
 
       {/* Журнал замеров */}
       <div>
