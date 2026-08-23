@@ -8,6 +8,7 @@ import {
 } from "../services/firebase";
 import { useAppSelector } from "../redux/store";
 import { NofapLink, RelapseRecord } from "../types";
+import NofapGraph from "../components/NofapGraph";
 
 interface Milestone {
   days: number;
@@ -87,7 +88,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ timestamp }) => {
   });
 
   return (
-    <div className="progressBar_noFap">
+    <div
+    style={{
+          marginBottom: "20px",
+        }}
+    >
       {/* Карточка текущего ранга */}
       <div
         style={{
@@ -446,24 +451,9 @@ const NoFapPage: React.FC = () => {
             <>
               <ProgressBar timestamp={nofapTimestamp} />
 
-              <div style={{ marginBottom: "20px" }}>
-                <button
-                  onClick={handleOpenRelapseModal}
-                  style={{
-                    marginTop: "30px",
-                    cursor: "pointer",
-                    backgroundColor: "#2a1111",
-                    color: "#ff4d4d",
-                    border: "1px solid #ff4d4d88",
-                    padding: "10px 18px",
-                    borderRadius: "6px",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Подрочил / Посмотрел порно (Зафиксировать срыв)
-                </button>
-              </div>
+              <NofapGraph timestamp={nofapTimestamp} />
+
+              
             </>
           ) : (
             <div style={{ marginBottom: "20px" }}>
@@ -731,9 +721,37 @@ const NoFapPage: React.FC = () => {
                   </div>
                 </div>
               ))}
+
+              {nofapTimestamp > 0 ? (
+            <>
+              {/* <ProgressBar timestamp={nofapTimestamp} /> */}
+
+              <div style={{ marginBottom: "20px" }}>
+                <button
+                  onClick={handleOpenRelapseModal}
+                  style={{
+                    marginTop: "30px",
+                    cursor: "pointer",
+                    backgroundColor: "#2a1111",
+                    color: "#ff4d4d",
+                    border: "1px solid #ff4d4d88",
+                    padding: "10px 18px",
+                    borderRadius: "6px",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                  }}
+                >
+                  Подрочил / Посмотрел порно (Зафиксировать срыв)
+                </button>
+              </div>
+            </>
+          ) : (<div></div>)}
             </div>
           )}
         </div>
+
+
+        
 
       </div>
     </div>
