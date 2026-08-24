@@ -9,6 +9,8 @@ import {
 import { useAppSelector } from "../redux/store";
 import { NofapLink, RelapseRecord } from "../types";
 import NofapGraph from "../components/NofapGraph";
+import ActionButton from "../components/ActionButton";
+import ForgeLoader from "../components/ForgeLoader";
 
 interface Milestone {
   days: number;
@@ -51,7 +53,7 @@ const calculateTimeDifference = (timestamp: number, now: number): string => {
 
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
   const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+  const minutes = Math.floor((difference % (1000 * 60)) / 1000);
   const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
   return `${days}д ${hours}ч ${minutes}м ${seconds}с`;
@@ -88,11 +90,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ timestamp }) => {
   });
 
   return (
-    <div
-    style={{
-          marginBottom: "20px",
-        }}
-    >
+    <div style={{ marginBottom: "20px" }}>
       {/* Карточка текущего ранга */}
       <div
         style={{
@@ -252,79 +250,57 @@ const NoFapPage: React.FC = () => {
     fetchUserData();
   }, [user?.uid]);
 
+  // Добавление ссылки через ActionButton
   const handleAddLink = async () => {
     if (!user?.uid || !newLink.trim()) return;
 
     const item: NofapLink = { link: newLink.trim(), note: newLinkNote.trim() };
-
-    try {
-      await addLinkToUser_nofap(user.uid, item);
-      setLinks((prev) => [...prev, item]);
-      setNewLink("");
-      setNewLinkNote("");
-    } catch (error: any) {
-      console.error("Ошибка при добавлении ссылки:", error.message);
-    }
+    await addLinkToUser_nofap(user.uid, item);
+    setLinks((prev) => [...prev, item]);
+    setNewLink("");
+    setNewLinkNote("");
   };
 
+  // Удаление ссылки через ActionButton
   const handleRemoveLink = async (linkToRemove: NofapLink) => {
     if (!user?.uid) return;
-
-    const isConfirmed = window.confirm(
-      `Удалить ссылку "${linkToRemove.note || linkToRemove.link}"?`
-    );
+    const isConfirmed = window.confirm(`Удалить ссылку "${linkToRemove.note || linkToRemove.link}"?`);
     if (!isConfirmed) return;
 
-    try {
-      await removeLinkFromUser_nofap(user.uid, linkToRemove);
-      setLinks((prev) =>
-        prev.filter(
-          (l) => l.link !== linkToRemove.link || l.note !== linkToRemove.note
-        )
-      );
-    } catch (error: any) {
-      console.error("Ошибка при удалении ссылки:", error.message);
-    }
+    await removeLinkFromUser_nofap(user.uid, linkToRemove);
+    setLinks((prev) =>
+      prev.filter((l) => l.link !== linkToRemove.link || l.note !== linkToRemove.note)
+    );
   };
 
+  // Запуск таймера сейчас
   const startNofapNow = async () => {
     if (!user?.uid) return;
-    try {
-      const dateNow = Date.now();
-      await updateUserData(user.uid, "nofap_timestamp", dateNow);
-      setNofapTimestamp(dateNow);
-    } catch (error) {
-      console.error("Ошибка при запуске таймера:", error);
-    }
+    const dateNow = Date.now();
+    await updateUserData(user.uid, "nofap_timestamp", dateNow);
+    setNofapTimestamp(dateNow);
   };
 
+  // Запуск из указанной даты
   const startNofapFromDate = async () => {
     if (!user?.uid || !startDate || !startTime) return;
 
-    const createTimestamp = (dateStr: string, timeStr: string): number => {
-      const [hours, minutes] = timeStr.split(":").map(Number);
-      const dateObj = new Date(dateStr);
-      dateObj.setHours(hours || 0);
-      dateObj.setMinutes(minutes || 0);
-      dateObj.setSeconds(0);
-      return dateObj.getTime();
-    };
+    const [hours, minutes] = startTime.split(":").map(Number);
+    const dateObj = new Date(startDate);
+    dateObj.setHours(hours || 0);
+    dateObj.setMinutes(minutes || 0);
+    dateObj.setSeconds(0);
+    const timestamp = dateObj.getTime();
 
-    try {
-      const timestamp = createTimestamp(startDate, startTime);
-      await updateUserData(user.uid, "nofap_timestamp", timestamp);
-      setNofapTimestamp(timestamp);
-    } catch (error) {
-      console.error("Ошибка при сохранении даты:", error);
-    }
+    await updateUserData(user.uid, "nofap_timestamp", timestamp);
+    setNofapTimestamp(timestamp);
   };
 
-  // Открытие модалки фиксации срыва
   const handleOpenRelapseModal = () => {
     setShowRelapseModal(true);
   };
 
-  // Подтверждение срыва и запись в дневник
+  // Фиксация срыва в модальном окне
   const confirmRelapseAndReset = async () => {
     if (!user?.uid) return;
 
@@ -339,22 +315,17 @@ const NoFapPage: React.FC = () => {
 
     const updatedRelapses = [newRecord, ...relapses];
 
-    try {
-      // Сбрасываем таймер в 0 и записываем лог в базу
-      await updateUserData(user.uid, "nofap_timestamp", 0);
-      await updateUserData(user.uid, "nofap_relapses" as any, JSON.stringify(updatedRelapses));
+    await updateUserData(user.uid, "nofap_timestamp", 0);
+    await updateUserData(user.uid, "nofap_relapses" as any, JSON.stringify(updatedRelapses));
 
-      setNofapTimestamp(0);
-      setRelapses(updatedRelapses);
-      setShowRelapseModal(false);
-      setRelapseReason("");
-      setRelapseLesson("");
-    } catch (error) {
-      console.error("Ошибка при фиксации срыва:", error);
-    }
+    setNofapTimestamp(0);
+    setRelapses(updatedRelapses);
+    setShowRelapseModal(false);
+    setRelapseReason("");
+    setRelapseLesson("");
   };
 
-  // Удаление записи из дневника срывов
+  // Удаление записи из журнала срывов
   const handleDeleteRelapse = async (id: string) => {
     if (!user?.uid) return;
     const isConfirmed = window.confirm("Удалить эту запись из журнала срывов?");
@@ -366,12 +337,12 @@ const NoFapPage: React.FC = () => {
   };
 
   if (isLoading) {
-    return (
-      <div>
-        <p>Загрузка из базы данных... подождите...</p>
-      </div>
-    );
-  }
+  return (
+    <ForgeLoader
+      title="NOFAP // NOPORN"
+    />
+  );
+}
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "950px", margin: "0 auto" }}>
@@ -380,13 +351,7 @@ const NoFapPage: React.FC = () => {
           <h1>Трекер воздержания</h1>
 
           {/* Правила */}
-          <div
-            style={{
-              marginBottom: "25px",
-              fontFamily: "monospace",
-              color: "#e0e0e0",
-            }}
-          >
+          <div style={{ marginBottom: "25px", fontFamily: "monospace", color: "#e0e0e0" }}>
             <div
               style={{
                 fontSize: "18px",
@@ -453,7 +418,24 @@ const NoFapPage: React.FC = () => {
 
               <NofapGraph timestamp={nofapTimestamp} />
 
-              
+              <div style={{ marginBottom: "20px" }}>
+                <button
+                  onClick={handleOpenRelapseModal}
+                  style={{
+                    marginTop: "20px",
+                    cursor: "pointer",
+                    backgroundColor: "#2a1111",
+                    color: "#ff4d4d",
+                    border: "1px solid #ff4d4d88",
+                    padding: "10px 18px",
+                    borderRadius: "6px",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                  }}
+                >
+                  Подрочил / Посмотрел порно (Зафиксировать срыв)
+                </button>
+              </div>
             </>
           ) : (
             <div style={{ marginBottom: "20px" }}>
@@ -469,7 +451,7 @@ const NoFapPage: React.FC = () => {
                   />
                 </label>
               </div>
-              <div style={{ marginBottom: "10px" }}>
+              <div style={{ marginBottom: "15px" }}>
                 <label>
                   Время начала:
                   <input
@@ -481,15 +463,25 @@ const NoFapPage: React.FC = () => {
                 </label>
               </div>
 
-              <button onClick={startNofapNow} style={{ padding: "8px 14px", cursor: "pointer", backgroundColor: "#00ff15", color: "#000", fontWeight: "bold", border: "none", borderRadius: "4px" }}>
-                Начать воздержание сейчас
-              </button>
-              <button
-                onClick={startNofapFromDate}
-                style={{ padding: "8px 14px", marginLeft: "10px", cursor: "pointer", backgroundColor: "#1f1f1f", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}
-              >
-                Уже воздерживаюсь
-              </button>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                <ActionButton
+                  onClick={startNofapNow}
+                  loadingText="Запуск таймера..."
+                  successText="✓ В строю!"
+                >
+                  Начать воздержание сейчас
+                </ActionButton>
+
+                <ActionButton
+                  onClick={startNofapFromDate}
+                  variant="secondary"
+                  loadingText="Сохранение..."
+                  successText="✓ Дата зафиксирована!"
+                  disabled={!startDate || !startTime}
+                >
+                  Уже воздерживаюсь
+                </ActionButton>
+              </div>
             </div>
           )}
         </div>
@@ -587,20 +579,14 @@ const NoFapPage: React.FC = () => {
                 >
                   Отмена
                 </button>
-                <button
+                <ActionButton
                   onClick={confirmRelapseAndReset}
-                  style={{
-                    backgroundColor: "#ff4d4d",
-                    color: "#fff",
-                    border: "none",
-                    padding: "10px 18px",
-                    borderRadius: "4px",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
+                  variant="danger"
+                  loadingText="Запись в дневник..."
+                  successText="✓ Зафиксировано"
                 >
                   Записать в дневник и сбросить счетчик
-                </button>
+                </ActionButton>
               </div>
             </div>
           </div>
@@ -609,34 +595,46 @@ const NoFapPage: React.FC = () => {
         {/* База знаний */}
         <div style={{ marginBottom: "40px", marginTop: "30px" }}>
           <h2>База знаний &amp; Фокус</h2>
-          <div style={{ marginBottom: "10px" }}>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "15px" }}>
             <input
               type="text"
               placeholder="Введите ссылку"
               value={newLink}
               onChange={(e) => setNewLink(e.target.value)}
-              style={{ marginRight: "10px", padding: "5px" }}
+              style={{ flex: 1, minWidth: "200px", padding: "8px", backgroundColor: "#141414", border: "1px solid #333", color: "#fff", borderRadius: "4px" }}
             />
             <input
               type="text"
               placeholder="Введите описание"
               value={newLinkNote}
               onChange={(e) => setNewLinkNote(e.target.value)}
-              style={{ marginRight: "10px", padding: "5px" }}
+              style={{ flex: 1, minWidth: "200px", padding: "8px", backgroundColor: "#141414", border: "1px solid #333", color: "#fff", borderRadius: "4px" }}
             />
-            <button onClick={handleAddLink} style={{ padding: "5px 10px" }}>
+            <ActionButton
+              onClick={handleAddLink}
+              loadingText="Сохранение..."
+              successText="✓ Сохранено"
+              disabled={!newLink.trim()}
+              style={{ padding: "8px 16px" }}
+            >
               Сохранить
-            </button>
+            </ActionButton>
           </div>
 
           {links.map((link, index) => (
-            <div key={`${link.link}-${index}`} className="nofap_link">
-              <a href={link.link} target="_blank" rel="noopener noreferrer">
+            <div key={`${link.link}-${index}`} className="nofap_link" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", backgroundColor: "#111", padding: "10px 14px", borderRadius: "6px", border: "1px solid #222" }}>
+              <a href={link.link} target="_blank" rel="noopener noreferrer" style={{ color: "#00ff15", textDecoration: "none" }}>
                 {link.note || link.link}
               </a>
-              <button onClick={() => handleRemoveLink(link)}>
+              <ActionButton
+                onClick={() => handleRemoveLink(link)}
+                variant="danger"
+                loadingText="..."
+                successText="✓"
+                style={{ padding: "4px 10px", fontSize: "12px" }}
+              >
                 Удалить
-              </button>
+              </ActionButton>
             </div>
           ))}
         </div>
@@ -697,19 +695,15 @@ const NoFapPage: React.FC = () => {
                         (Прерван стрик: <strong style={{ color: "#fff" }}>{item.durationFormatted}</strong>)
                       </span>
                     </div>
-                    <button
+                    <ActionButton
                       onClick={() => handleDeleteRelapse(item.id)}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        color: "#555",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                      }}
-                      title="Удалить запись"
+                      variant="danger"
+                      loadingText="..."
+                      successText="✓"
+                      style={{ padding: "2px 8px", fontSize: "12px" }}
                     >
                       ×
-                    </button>
+                    </ActionButton>
                   </div>
 
                   <div style={{ fontSize: "14px", color: "#ddd", marginBottom: "6px" }}>
@@ -721,37 +715,9 @@ const NoFapPage: React.FC = () => {
                   </div>
                 </div>
               ))}
-
-              {nofapTimestamp > 0 ? (
-            <>
-              {/* <ProgressBar timestamp={nofapTimestamp} /> */}
-
-              <div style={{ marginBottom: "20px" }}>
-                <button
-                  onClick={handleOpenRelapseModal}
-                  style={{
-                    marginTop: "30px",
-                    cursor: "pointer",
-                    backgroundColor: "#2a1111",
-                    color: "#ff4d4d",
-                    border: "1px solid #ff4d4d88",
-                    padding: "10px 18px",
-                    borderRadius: "6px",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  Подрочил / Посмотрел порно (Зафиксировать срыв)
-                </button>
-              </div>
-            </>
-          ) : (<div></div>)}
             </div>
           )}
         </div>
-
-
-        
 
       </div>
     </div>

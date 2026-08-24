@@ -5,6 +5,7 @@ import { useAppSelector } from "../redux/store";
 import { getUserData } from "../services/firebase";
 import { calculateAdvancedSkufIndex } from "./Body__page";
 import { MoneyGoal, EisenhowerTask } from "../types";
+import ForgeLoader from "../components/ForgeLoader";
 
 const getNoFapRank = (days: number) => {
   if (days >= 90) return { title: "Титан", color: "#e056fd", badge: "🌌" };
@@ -22,7 +23,7 @@ const calculateLiveTimeDifference = (timestamp: number, now: number): string => 
 
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
   const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+  const minutes = Math.floor((difference % (1000 * 60)) / 1000);
   const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
   return `${days}д ${hours}ч ${minutes}м ${seconds}с`;
@@ -41,7 +42,6 @@ const DashboardPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [now, setNow] = useState<number>(Date.now());
 
-  // Живой таймер для секунд
   useEffect(() => {
     const interval = setInterval(() => {
       setNow(Date.now());
@@ -66,7 +66,7 @@ const DashboardPage: React.FC = () => {
   }, [user?.uid]);
 
   if (isLoading) {
-    return <div style={{ padding: "20px", color: "#888" }}>Инициализация ForgeOS...</div>;
+    return <ForgeLoader />;
   }
 
   // 1. Дисциплина (NoFap)
@@ -163,14 +163,7 @@ const DashboardPage: React.FC = () => {
           }}
         >
           <div>
-            <span
-              style={{
-                fontSize: "11px",
-                color: "#888",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-              }}
-            >
+            <span style={{ fontSize: "11px", color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>
               Моральное состояние
             </span>
             <h2 style={{ color: nofapRank.color, margin: "8px 0 4px 0", fontSize: "22px" }}>
@@ -211,23 +204,10 @@ const DashboardPage: React.FC = () => {
           }}
         >
           <div>
-            <span
-              style={{
-                fontSize: "11px",
-                color: "#888",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-              }}
-            >
+            <span style={{ fontSize: "11px", color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>
               Физическое состояние
             </span>
-            <h2
-              style={{
-                color: bodyStatus ? bodyStatus.color : "#fff",
-                margin: "8px 0 4px 0",
-                fontSize: "22px",
-              }}
-            >
+            <h2 style={{ color: bodyStatus ? bodyStatus.color : "#fff", margin: "8px 0 4px 0", fontSize: "22px" }}>
               {bodyStatus ? `${bodyStatus.badge} ${bodyStatus.title}` : "Нет замеров"}
             </h2>
             <p style={{ color: "#aaa", fontSize: "14px", margin: "10px 0 0 0" }}>
@@ -258,14 +238,7 @@ const DashboardPage: React.FC = () => {
           }}
         >
           <div>
-            <span
-              style={{
-                fontSize: "11px",
-                color: "#888",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-              }}
-            >
+            <span style={{ fontSize: "11px", color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>
               Финансовое состояние
             </span>
             <h2 style={{ color: "#00ff15", margin: "8px 0 4px 0", fontSize: "22px" }}>
@@ -274,8 +247,7 @@ const DashboardPage: React.FC = () => {
             {currentGoal ? (
               <div style={{ marginTop: "10px" }}>
                 <p style={{ color: "#aaa", fontSize: "13px", margin: "0 0 4px 0" }}>
-                  Цель: <strong style={{ color: "#fff" }}>{currentGoal.name}</strong> (
-                  {goalProgress.toFixed(1)}%)
+                  Цель: <strong style={{ color: "#fff" }}>{currentGoal.name}</strong> ({goalProgress.toFixed(1)}%)
                 </p>
                 <div
                   style={{
@@ -286,13 +258,7 @@ const DashboardPage: React.FC = () => {
                     overflow: "hidden",
                   }}
                 >
-                  <div
-                    style={{
-                      width: `${goalProgress}%`,
-                      height: "100%",
-                      backgroundColor: "#00ff15",
-                    }}
-                  />
+                  <div style={{ width: `${goalProgress}%`, height: "100%", backgroundColor: "#00ff15" }} />
                 </div>
               </div>
             ) : (
@@ -319,14 +285,7 @@ const DashboardPage: React.FC = () => {
           }}
         >
           <div>
-            <span
-              style={{
-                fontSize: "11px",
-                color: "#888",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-              }}
-            >
+            <span style={{ fontSize: "11px", color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>
               Задачи &amp; Фокус
             </span>
             <h2 style={{ color: "#3498db", margin: "8px 0 4px 0", fontSize: "22px" }}>
@@ -345,7 +304,6 @@ const DashboardPage: React.FC = () => {
             Открыть канбан →
           </div>
         </Link>
-
 
         {/* Карточка: Квесты Дисциплины */}
         <Link

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getUserData, updateUserData } from "../services/firebase";
 import { useAppSelector } from "../redux/store";
 import { Line } from "react-chartjs-2";
+import ActionButton from "../components/ActionButton";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +16,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import { MoneyGoal, MoneyHistoryItem, MoneyCount } from "../types";
+import ForgeLoader from "../components/ForgeLoader";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
@@ -33,7 +35,7 @@ const CountMoneyPage: React.FC = () => {
   const [moneyDivider, setMoneyDivider] = useState<number>(5000);
   const [moneyDividerDisplay, setMoneyDividerDisplay] = useState<number>(5000);
   const [displayedMoney, setDisplayedMoney] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [oldDataArray, setOldDataArray] = useState<MoneyHistoryItem[]>([]);
   const [moneyGoalsArray, setMoneyGoalsArray] = useState<MoneyGoal[]>([]);
@@ -56,44 +58,34 @@ const CountMoneyPage: React.FC = () => {
     }
   };
 
-  const submitMoneyFirebaseRequest = async (currentInputMoney: number, currentDivider: number) => {
+  // Сохранение баланса в Firebase
+  const handleConfirmMoney = async () => {
     if (!user?.uid) return;
 
-    try {
-      setIsLoading(true);
-      const moneyObject: MoneyCount = {
-        sum: currentInputMoney,
-        divider: currentDivider,
-      };
-      await updateUserData(user.uid, "money_count", moneyObject);
+    const moneyObject: MoneyCount = {
+      sum: inputMoney,
+      divider: moneyDividerDisplay,
+    };
+    await updateUserData(user.uid, "money_count", moneyObject);
 
-      const dateNow = Date.now();
-      const historyObject: MoneyHistoryItem = {
-        sum: currentInputMoney,
-        date: dateNow,
-      };
+    const dateNow = Date.now();
+    const historyObject: MoneyHistoryItem = {
+      sum: inputMoney,
+      date: dateNow,
+    };
 
-      const updatedHistory = [...oldDataArray, historyObject];
-      await updateUserData(user.uid, "money_history", JSON.stringify(updatedHistory));
-      setOldDataArray(updatedHistory);
-    } catch (error) {
-      console.error("Ошибка при обновлении данных денег:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const updatedHistory = [...oldDataArray, historyObject];
+    await updateUserData(user.uid, "money_history", JSON.stringify(updatedHistory));
 
-  const confirmMoney = () => {
     setDisplayedMoney(inputMoney);
     setMoneyDivider(moneyDividerDisplay);
-    submitMoneyFirebaseRequest(inputMoney, moneyDividerDisplay);
+    setOldDataArray(updatedHistory);
   };
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user?.uid) return;
       try {
-        setIsLoading(true);
         const data = await getUserData(user.uid);
 
         if (data) {
@@ -153,14 +145,12 @@ const CountMoneyPage: React.FC = () => {
 
     if (!newFinancialGoal.trim()) {
       alert("Пожалуйста, введите название цели.");
-      setAddNewGoalVisible(false);
       return;
     }
 
     const priceNum = Number(newFinancialGoalPrice);
     if (isNaN(priceNum) || priceNum <= 0) {
       alert("Пожалуйста, введите корректную цену (число больше 0).");
-      setAddNewGoalVisible(false);
       return;
     }
 
@@ -170,24 +160,20 @@ const CountMoneyPage: React.FC = () => {
     };
 
     const updatedGoals = [...moneyGoalsArray, sendObject];
+    await updateUserData(user.uid, "money_goals", JSON.stringify(updatedGoals));
+
     setMoneyGoalsArray(updatedGoals);
     setAddNewGoalVisible(false);
     setNewFinancialGoal("");
     setNewFinancialGoalPrice("");
-
-    await updateUserData(user.uid, "money_goals", JSON.stringify(updatedGoals));
   };
 
   const generateBlocksMode2 = () => {
     const divider = moneyDivider > 0 ? moneyDivider : 5000;
     let textDividerDisplay: string | number = divider;
 
-    if (divider > 1000) {
-      if (divider % 1000 === 0) {
-        textDividerDisplay = (divider / 1000).toFixed(0) + "k";
-      } else {
-        textDividerDisplay = (divider / 1000).toFixed(1) + "k";
-      }
+    if (divider >= 1000) {
+      textDividerDisplay = divider % 1000 === 0 ? `${(divider / 1000).toFixed(0)}k` : `${(divider / 1000).toFixed(1)}k`;
     }
 
     const blocks: React.JSX.Element[] = [];
@@ -195,12 +181,8 @@ const CountMoneyPage: React.FC = () => {
     const remainder = displayedMoney % divider;
 
     let textRemainderDisplay: string | number = remainder;
-    if (remainder > 1000) {
-      if (remainder % 1000 === 0) {
-        textRemainderDisplay = (remainder / 1000).toFixed(0) + "k";
-      } else {
-        textRemainderDisplay = (remainder / 1000).toFixed(1) + "k";
-      }
+    if (remainder >= 1000) {
+      textRemainderDisplay = remainder % 1000 === 0 ? `${(remainder / 1000).toFixed(0)}k` : `${(remainder / 1000).toFixed(1)}k`;
     }
 
     const widthPercent = (remainder / divider) * 100;
@@ -212,14 +194,15 @@ const CountMoneyPage: React.FC = () => {
           key={`full-${i}`}
           style={{
             width: "100%",
-            height: "50px",
+            height: "44px",
             backgroundColor: "#00ff15",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             color: "black",
             fontWeight: "bold",
-            border: "1px solid rgba(255, 255, 255, 0.37)",
+            borderRadius: "4px",
+            boxShadow: "0 0 10px rgba(0, 255, 21, 0.2)",
           }}
         >
           {textDividerDisplay}
@@ -233,23 +216,26 @@ const CountMoneyPage: React.FC = () => {
           key="remainder-block"
           style={{
             width: "100%",
-            height: "50px",
+            height: "44px",
             display: "flex",
             alignItems: "center",
             justifyContent: "flex-start",
-            border: "1px solid rgba(255, 255, 255, 0.37)",
-            backgroundColor: "#000",
+            border: "1px solid #333",
+            backgroundColor: "#111",
+            borderRadius: "4px",
             position: "relative",
+            overflow: "hidden",
           }}
         >
           <div
             style={{
               width: `${widthPercent}%`,
-              height: "50px",
+              height: "100%",
               backgroundColor: "#00ff15",
               position: "absolute",
               left: 0,
               top: 0,
+              transition: "width 0.3s ease",
             }}
           />
           <p
@@ -257,6 +243,7 @@ const CountMoneyPage: React.FC = () => {
               position: "absolute",
               width: "100%",
               height: "100%",
+              margin: 0,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -265,10 +252,12 @@ const CountMoneyPage: React.FC = () => {
           >
             <span
               style={{
-                color: "black",
-                padding: "5px",
+                color: "#000",
+                padding: "2px 6px",
                 fontWeight: "bold",
-                backgroundColor: "rgba(93, 255, 107, 0.671)",
+                borderRadius: "3px",
+                fontSize: "12px",
+                backgroundColor: "rgba(0, 255, 21, 0.8)",
               }}
             >
               {textRemainderDisplay}
@@ -285,14 +274,16 @@ const CountMoneyPage: React.FC = () => {
     labels: oldDataArray.map((item) => formatTimestampChart(item.date)),
     datasets: [
       {
-        label: "Сумма",
+        label: "Баланс (₽)",
         data: oldDataArray.map((item) => item.sum),
         borderColor: "#00ff15",
-        backgroundColor: "rgb(50, 252, 0)",
-        pointBackgroundColor: "rgb(255, 255, 255)",
+        backgroundColor: "rgba(0, 255, 21, 0.08)",
+        pointBackgroundColor: "#00ff15",
+        pointBorderColor: "#fff",
         pointRadius: 4,
         pointHoverRadius: 6,
-        fill: false,
+        fill: true,
+        tension: 0.25,
       },
     ],
   };
@@ -302,179 +293,298 @@ const CountMoneyPage: React.FC = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: true,
-        labels: {
-          usePointStyle: true,
-        },
+        display: false,
       },
       tooltip: {
-        enabled: true,
+        backgroundColor: "#111",
+        titleColor: "#00ff15",
+        bodyColor: "#fff",
+        borderColor: "#333",
+        borderWidth: 1,
+        callbacks: {
+          label: (context) => `Баланс: ${Number(context.raw).toLocaleString("ru-RU")} ₽`,
+        },
       },
     },
     scales: {
       x: {
-        grid: {
-          display: false,
-          color: "#fff",
-        },
-        ticks: {
-          color: "#fff",
-          font: {
-            size: 12,
-          },
-        },
-        border: {
-          display: true,
-          color: "#fff",
-        },
+        grid: { color: "#1a1a1a" },
+        ticks: { color: "#888", font: { size: 11 } },
       },
       y: {
-        grid: {
-          display: false,
-          color: "#fff",
-        },
+        grid: { color: "#1a1a1a" },
         ticks: {
-          color: "#fff",
-          font: {
-            size: 12,
-          },
-          callback: (value) => `${value}₽`,
+          color: "#00ff15",
+          font: { size: 11 },
+          callback: (value) => `${Number(value).toLocaleString("ru-RU")} ₽`,
         },
-        border: {
-          display: true,
-          color: "#fff",
-        },
-      },
-    },
-    elements: {
-      line: {
-        tension: 0.4,
       },
     },
   };
 
   if (isLoading) {
-    return (
-      <div>
-        <p>Загрузка из базы данных... подождите...</p>
-      </div>
-    );
-  }
+  return (
+    <ForgeLoader
+      title="КАПИТАЛ // СИНХРОНИЗАЦИЯ"
+      logs={["FETCHING_LEDGER...", "BUILDING_CHART...", "UPDATING_GOALS..."]}
+    />
+  );
+}
+
+  const remainderToNext = moneyDivider - (displayedMoney % moneyDivider);
 
   return (
-    <div className="countMoney_container">
-      <div>
-        <h1>Счетчик денег</h1>
-
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "950px", margin: "0 auto" }}>
+      <div className="countMoney_container">
         <div>
-          <div>
-            <span>Введите сумму денег:</span>
-            <input
-              value={inputMoney || ""}
-              onChange={handleInputChange}
-              style={{ marginLeft: "10px", padding: "5px" }}
-            />
-          </div>
-          <div>
-            <span>Введите делитель:</span>
-            <input
-              value={moneyDividerDisplay || ""}
-              onChange={handleDividerChangeDisplay}
-              style={{ marginLeft: "10px", padding: "5px" }}
-            />
-          </div>
-          <div>
-            <button onClick={confirmMoney} style={{ marginLeft: "0px", padding: "5px 10px" }}>
-              Подтвердить
-            </button>
-          </div>
-        </div>
+          <h1 style={{ marginBottom: "20px" }}>
+            FORGE<span style={{ color: "#00ff15" }}>OS</span> // КАПИТАЛ
+          </h1>
 
-        <div>
-          <p>
-            Текущая сумма:{" "}
-            <strong style={{ color: "#00ff15" }}>{displayedMoney}</strong> ₽
-          </p>
-          <p>
-            Ты можешь заработать еще{" "}
-            <strong style={{ color: "#00ff15" }}>
-              {moneyDivider - (displayedMoney % moneyDivider)}
-            </strong>{" "}
-            ?
-          </p>
-
+          {/* Форма ввода баланса */}
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(7,1fr)",
-              width: "100%",
-              maxWidth: "800px",
-              gap: "10px",
-              marginTop: "20px",
+              backgroundColor: "#111",
+              border: "1px solid #222",
+              borderRadius: "8px",
+              padding: "16px 20px",
+              marginBottom: "25px",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "15px",
+              alignItems: "flex-end",
             }}
           >
-            {generateBlocksMode2()}
-          </div>
-        </div>
-      </div>
-
-      <div className="chartWrap">
-        <div className="chartWrap_chart" style={{ height: "300px" }}>
-          <Line data={chartData} options={chartOptions} />
-        </div>
-
-        <div className="goalsWrap">
-          <div>
-            {moneyGoalsArray.map((goal, index) => {
-              const progress = Math.min((displayedMoney / goal.price) * 100, 100);
-
-              return (
-                <div key={`${goal.name}-${index}`} className="goal-container">
-                  <div className="goal-container-header">
-                    <h3>{goal.name}</h3>
-                    <button
-                      className="delete-goal-button"
-                      onClick={() => handleDeleteGoal(goal.name)}
-                    >
-                      Удалить цель
-                    </button>
-                  </div>
-                  <p>Цена: {goal.price.toLocaleString("ru-RU")} ₽</p>
-                  <div className="progress-bar-container">
-                    <div
-                      className="progress-bar"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                  <p>Прогресс: {progress.toFixed(2)}%</p>
-                </div>
-              );
-            })}
-          </div>
-
-          {addNewGoalVisible ? (
             <div>
+              <label style={{ display: "block", fontSize: "12px", color: "#888", marginBottom: "4px" }}>
+                Сумма баланса (₽):
+              </label>
+              <input
+                type="number"
+                value={inputMoney || ""}
+                onChange={handleInputChange}
+                style={{
+                  padding: "8px 12px",
+                  backgroundColor: "#181818",
+                  border: "1px solid #333",
+                  color: "#00ff15",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  borderRadius: "4px",
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "12px", color: "#888", marginBottom: "4px" }}>
+                Делитель блока (₽):
+              </label>
+              <input
+                type="number"
+                step="500"
+                value={moneyDividerDisplay || ""}
+                onChange={handleDividerChangeDisplay}
+                style={{
+                  padding: "8px 12px",
+                  backgroundColor: "#181818",
+                  border: "1px solid #333",
+                  color: "#fff",
+                  fontSize: "16px",
+                  borderRadius: "4px",
+                }}
+              />
+            </div>
+
+            <ActionButton
+              onClick={handleConfirmMoney}
+              loadingText="Синхронизация..."
+              successText="✓ Баланс зафиксирован!"
+              style={{ padding: "10px 18px" }}
+            >
+              + Зафиксировать баланс
+            </ActionButton>
+          </div>
+
+          {/* Сводка баланса */}
+          <div style={{ marginBottom: "25px" }}>
+            <div style={{ fontSize: "18px", color: "#ddd", marginBottom: "4px" }}>
+              Текущий капитал: <strong style={{ color: "#00ff15", fontSize: "24px" }}>{displayedMoney.toLocaleString("ru-RU")}</strong> ₽
+            </div>
+            <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>
+              До следующего блока в {moneyDivider.toLocaleString("ru-RU")} ₽ осталось заработать:{" "}
+              <strong style={{ color: "#00ff15" }}>{remainderToNext.toLocaleString("ru-RU")} ₽</strong>
+            </p>
+
+            {/* Сетка кубиков капитала */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(65px, 1fr))",
+                width: "100%",
+                gap: "8px",
+                marginTop: "16px",
+              }}
+            >
+              {generateBlocksMode2()}
+            </div>
+          </div>
+        </div>
+
+        {/* График динамики капитала */}
+        <div style={{ backgroundColor: "#111", border: "1px solid #222", borderRadius: "8px", padding: "16px 20px", marginBottom: "30px" }}>
+          <h3 style={{ margin: "0 0 15px 0", fontSize: "16px", color: "#fff" }}>📈 Динамика накопления капитала</h3>
+          <div style={{ height: "260px" }}>
+            <Line data={chartData} options={chartOptions} />
+          </div>
+        </div>
+
+        {/* Секция финансовых целей */}
+        <div style={{ borderTop: "1px solid #222", paddingTop: "25px", marginBottom: "50px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <h2 style={{ margin: 0, fontSize: "20px", color: "#00ff15" }}>🎯 Финансовые цели</h2>
+            {!addNewGoalVisible && (
+              <button
+                onClick={() => setAddNewGoalVisible(true)}
+                style={{
+                  backgroundColor: "#1f1f1f",
+                  border: "1px solid #333",
+                  color: "#00ff15",
+                  padding: "6px 12px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                + Новая цель
+              </button>
+            )}
+          </div>
+
+          {/* Форма создания новой цели */}
+          {addNewGoalVisible && (
+            <div
+              style={{
+                backgroundColor: "#111",
+                border: "1px solid #00ff1544",
+                borderRadius: "6px",
+                padding: "16px",
+                marginBottom: "20px",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "10px",
+                alignItems: "center",
+              }}
+            >
               <input
                 value={newFinancialGoal}
                 onChange={(e) => setNewFinancialGoal(e.target.value)}
-                placeholder="Введите цель..."
+                placeholder="Название цели (например: Ноутбук)..."
                 type="text"
+                style={{ flex: 1, minWidth: "180px", padding: "8px 10px", backgroundColor: "#181818", border: "1px solid #333", color: "#fff", borderRadius: "4px" }}
               />
               <input
                 value={newFinancialGoalPrice}
-                placeholder="Введите цену..."
+                placeholder="Стоимость (₽)..."
                 onChange={handleChangeNewGoalPrice}
                 type="text"
                 pattern="\d*"
+                style={{ width: "130px", padding: "8px 10px", backgroundColor: "#181818", border: "1px solid #333", color: "#00ff15", borderRadius: "4px" }}
               />
-              <button onClick={addNewFinancialGoalToServer}>Добавить</button>
+              <ActionButton
+                onClick={addNewFinancialGoalToServer}
+                loadingText="Сохранение..."
+                successText="✓ Добавлено"
+                disabled={!newFinancialGoal.trim() || !newFinancialGoalPrice}
+                style={{ padding: "8px 14px" }}
+              >
+                Добавить цель
+              </ActionButton>
+              <button
+                onClick={() => setAddNewGoalVisible(false)}
+                style={{ backgroundColor: "transparent", border: "none", color: "#888", cursor: "pointer", fontSize: "13px" }}
+              >
+                Отмена
+              </button>
             </div>
-          ) : (
-            <button onClick={() => setAddNewGoalVisible(true)}>
-              Добавить финансовую цель
-            </button>
           )}
+
+          {/* Список целей с прогресс-барами */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {moneyGoalsArray.length === 0 ? (
+              <p style={{ color: "#666", fontSize: "14px" }}>Целей пока нет. Добавь первую цель выше.</p>
+            ) : (
+              moneyGoalsArray.map((goal, index) => {
+                const progress = Math.min((displayedMoney / goal.price) * 100, 100);
+                const isCompleted = displayedMoney >= goal.price;
+
+                return (
+                  <div
+                    key={`${goal.name}-${index}`}
+                    style={{
+                      backgroundColor: "#111",
+                      border: `1px solid ${isCompleted ? "#00ff1566" : "#222"}`,
+                      borderRadius: "6px",
+                      padding: "14px 18px",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <h3 style={{ margin: 0, fontSize: "16px", color: isCompleted ? "#00ff15" : "#fff" }}>
+                          {goal.name} {isCompleted && "👑"}
+                        </h3>
+                        <span style={{ fontSize: "12px", color: "#888" }}>
+                          ({goal.price.toLocaleString("ru-RU")} ₽)
+                        </span>
+                      </div>
+                      <ActionButton
+                        onClick={() => handleDeleteGoal(goal.name)}
+                        variant="danger"
+                        loadingText="..."
+                        successText="✓"
+                        style={{ padding: "3px 8px", fontSize: "12px" }}
+                      >
+                        Удалить
+                      </ActionButton>
+                    </div>
+
+                    {/* Полоса прогресса */}
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "6px",
+                        backgroundColor: "#222",
+                        borderRadius: "3px",
+                        overflow: "hidden",
+                        margin: "8px 0",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${progress}%`,
+                          height: "100%",
+                          backgroundColor: "#00ff15",
+                          boxShadow: "0 0 8px rgba(0, 255, 21, 0.4)",
+                          transition: "width 0.4s ease",
+                        }}
+                      />
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#aaa" }}>
+                      <span>Прогресс: <strong style={{ color: "#00ff15" }}>{progress.toFixed(1)}%</strong></span>
+                      <span>
+                        {isCompleted
+                          ? "Цель достигнута!"
+                          : `Осталось накопить: ${(goal.price - displayedMoney).toLocaleString("ru-RU")} ₽`}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
+
       </div>
     </div>
   );

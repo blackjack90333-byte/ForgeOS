@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
 import { getUserData, updateUserData } from "../services/firebase";
+import ForgeLoader from "../components/ForgeLoader";
 
 const DEFAULT_QUEST_TEMPLATE = `ЕЖЕДНЕВНАЯ БАЗА
 Триггер: прочитать сообщение тг https://t.me/c/1863625570/1673/1956
@@ -202,7 +203,19 @@ const QuestPage: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div style={{ padding: "20px", color: "#888" }}>Загрузка модуля квестов...</div>;
+    return (
+      <ForgeLoader
+        title="ПРОТОКОЛ КВЕСТОВ // ИНИЦИАЛИЗАЦИЯ"
+        subtitle="РАЗВЕРТЫВАНИЕ ДИСЦИПЛИНАРНОГО РАННЕРА"
+        logs={[
+          "PARSING_QUEST_FLOW...",
+          "CALIBRATING_FOCUS_STATE...",
+          "SYNCING_XP_PROGRESSION...",
+          "PREPARING_STAGE_TARGETS..."
+        ]}
+        accentColor="#00ff15"
+      />
+    );
   }
 
   const totalSteps = steps.length;

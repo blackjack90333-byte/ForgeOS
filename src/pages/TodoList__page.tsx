@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
 import { getUserData, saveEisenhowerTasks } from "../services/firebase";
 import { EisenhowerTask, TaskQuadrant, TaskStatus } from "../types";
+import ActionButton from "../components/ActionButton";
+import ForgeLoader from "../components/ForgeLoader";
 
 interface QuadrantConfig {
   id: TaskQuadrant;
@@ -108,7 +110,6 @@ const TodoListPage: React.FC = () => {
     await saveEisenhowerTasks(user.uid, updated);
   };
 
-  // Прямое перемещение кликом (для мобилок)
   const moveTaskDirect = async (taskId: string, targetQuadrant: TaskQuadrant, targetStatus: TaskStatus) => {
     if (!user?.uid) return;
     const updated = tasks.map((t) => {
@@ -121,7 +122,6 @@ const TodoListPage: React.FC = () => {
     await saveEisenhowerTasks(user.uid, updated);
   };
 
-  // Drag and Drop (для ПК)
   const handleDragStart = (e: React.DragEvent, id: string) => {
     setDraggedTaskId(id);
     e.dataTransfer.setData("text/plain", id);
@@ -176,35 +176,89 @@ const TodoListPage: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div style={{ padding: "20px", color: "#888" }}>Загрузка задач...</div>;
+    return (
+      <ForgeLoader
+        title="МАТРИЦА ДЕЛ // СИНХРОНИЗАЦИЯ"
+        subtitle="ПОСТРОЕНИЕ КВАДРАНТОВ ЭЙЗЕНХАУЭРА"
+        logs={[
+          "SCANNING_INBOX_BUFFER...",
+          "SORTING_PRIORITIES_Q1_Q4...",
+          "CALCULATING_COMPLETION_RATES...",
+          "MOUNTING_KANBAN_GRID..."
+        ]}
+        accentColor="#3498db"
+      />
+    );
   }
 
   const inboxTasks = tasks.filter((t) => t.quadrant === "inbox");
 
   return (
-    <div style={{ padding: "12px", fontFamily: "Arial, sans-serif", maxWidth: "1550px", margin: "0 auto" }}>
-      {/* Стили для адаптива */}
+    <div style={{ padding: "10px 14px", fontFamily: "Arial, sans-serif", width: "100%", boxSizing: "border-box" }}>
+      {/* Стили для адаптива и 3px скроллбаров с белым треком и серым ползунком */}
       <style>{`
         .todo_layout {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 12px;
+          width: 100%;
         }
         .quadrants_grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 16px;
+          gap: 12px;
+          width: 100%;
         }
         .columns_grid {
           display: grid;
           grid-template-columns: 1fr;
           gap: 8px;
         }
+        .column_scroll_area {
+          max-height: 240px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding-right: 4px;
+          scrollbar-width: thin;
+          scrollbar-color: #777777 #ffffff;
+        }
+        .inbox_scroll_area {
+          max-height: 600px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding-right: 4px;
+          scrollbar-width: thin;
+          scrollbar-color: #777777 #ffffff;
+        }
+        .column_scroll_area::-webkit-scrollbar,
+        .inbox_scroll_area::-webkit-scrollbar {
+          width: 3px;
+        }
+        .column_scroll_area::-webkit-scrollbar-track,
+        .inbox_scroll_area::-webkit-scrollbar-track {
+          background: #ffffff;
+          border-radius: 1px;
+        }
+        .column_scroll_area::-webkit-scrollbar-thumb,
+        .inbox_scroll_area::-webkit-scrollbar-thumb {
+          background: #777777;
+          border-radius: 1px;
+        }
+        .column_scroll_area::-webkit-scrollbar-thumb:hover,
+        .inbox_scroll_area::-webkit-scrollbar-thumb:hover {
+          background: #444444;
+        }
+
         @media (min-width: 900px) {
           .todo_layout {
             display: grid;
-            grid-template-columns: minmax(220px, 20%) 1fr;
+            grid-template-columns: 200px 1fr;
             align-items: start;
+            gap: 12px;
           }
           .quadrants_grid {
             grid-template-columns: 1fr 1fr;
@@ -212,23 +266,24 @@ const TodoListPage: React.FC = () => {
           .columns_grid {
             grid-template-columns: 1fr 1fr 1fr;
           }
+          .column_scroll_area {
+            max-height: 300px;
+          }
         }
       `}</style>
 
       {/* Навигация */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", borderBottom: "1px solid #222", paddingBottom: "10px" }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: "20px", letterSpacing: "1px" }}>
-            FORGE<span style={{ color: "#00ff15" }}>OS</span> // МАТРИЦА
-          </h1>
-        </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", borderBottom: "1px solid #222", paddingBottom: "8px" }}>
+        <h1 style={{ margin: 0, fontSize: "18px", letterSpacing: "1px" }}>
+          FORGE<span style={{ color: "#00ff15" }}>OS</span> // МАТРИЦА
+        </h1>
         <Link
           to="/"
           style={{
             backgroundColor: "#1a1a1a",
             color: "#00ff15",
             textDecoration: "none",
-            padding: "6px 12px",
+            padding: "5px 10px",
             borderRadius: "4px",
             fontSize: "12px",
             fontWeight: "bold",
@@ -240,7 +295,7 @@ const TodoListPage: React.FC = () => {
       </div>
 
       <div className="todo_layout">
-        {/* Буфер входящих */}
+        {/* Компактный буфер входящих */}
         <div
           onDragOver={handleDragOver}
           onDrop={(e) => handleDrop(e, "inbox", "todo")}
@@ -248,46 +303,43 @@ const TodoListPage: React.FC = () => {
             backgroundColor: "#0a0a0a",
             border: "1px solid #222",
             borderRadius: "8px",
-            padding: "12px",
+            padding: "10px",
           }}
         >
-          <div style={{ fontSize: "12px", fontWeight: "bold", color: "#00ff15", marginBottom: "8px", letterSpacing: "1px" }}>
-            📥 БУФЕР ВХОДЯЩИХ ({inboxTasks.length})
+          <div style={{ fontSize: "11px", fontWeight: "bold", color: "#00ff15", marginBottom: "8px", letterSpacing: "1px" }}>
+            📥 БУФЕР ({inboxTasks.length})
           </div>
 
-          <form onSubmit={handleAddInboxTask} style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
+          <form onSubmit={handleAddInboxTask} style={{ display: "flex", gap: "4px", marginBottom: "10px" }}>
             <input
               type="text"
-              placeholder="Новое дело..."
+              placeholder="Дело..."
               value={inboxInput}
               onChange={(e) => setInboxInput(e.target.value)}
               style={{
                 flex: 1,
-                padding: "8px 10px",
+                minWidth: 0,
+                padding: "6px 8px",
                 backgroundColor: "#141414",
                 border: "1px solid #333",
                 color: "#fff",
                 borderRadius: "4px",
-                fontSize: "16px", // 16px предотвращает зум на iPhone
+                fontSize: "14px",
               }}
             />
-            <button
+            <ActionButton
               type="submit"
-              style={{
-                backgroundColor: "#00ff15",
-                color: "#000",
-                border: "none",
-                fontWeight: "bold",
-                borderRadius: "4px",
-                padding: "0 14px",
-                cursor: "pointer",
-              }}
+              onClick={handleAddInboxTask}
+              loadingText="..."
+              successText="✓"
+              disabled={!inboxInput.trim()}
+              style={{ padding: "0 10px" }}
             >
               +
-            </button>
+            </ActionButton>
           </form>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <div className="inbox_scroll_area">
             {inboxTasks.map((task) => (
               <div
                 key={task.id}
@@ -296,54 +348,77 @@ const TodoListPage: React.FC = () => {
                 style={{
                   backgroundColor: "#161616",
                   border: "1px solid #2a2a2a",
-                  borderRadius: "5px",
-                  padding: "8px 10px",
-                  fontSize: "13px",
+                  borderRadius: "4px",
+                  padding: "6px 8px",
+                  fontSize: "12px",
                 }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                  <span style={{ color: "#eee" }}>{task.title}</span>
-                  <button
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px", marginBottom: "4px" }}>
+                  <span style={{ color: "#eee", wordBreak: "break-word", lineHeight: "1.3", flex: 1 }}>
+                    {task.title}
+                  </span>
+                  <ActionButton
                     onClick={() => handleDeleteTask(task.id)}
-                    style={{ background: "none", border: "none", color: "#666", cursor: "pointer", fontSize: "14px" }}
+                    variant="danger"
+                    loadingText="..."
+                    successText="✓"
+                    style={{
+                      padding: "0px 4px",
+                      fontSize: "11px",
+                      lineHeight: "14px",
+                      alignSelf: "flex-start",
+                      flexShrink: 0,
+                      minHeight: "16px",
+                    }}
                   >
                     ×
-                  </button>
+                  </ActionButton>
                 </div>
 
-                {/* Кнопки быстрого перемещения на мобилках */}
-                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
-                  <button
+                <div style={{ display: "flex", gap: "3px", flexWrap: "wrap" }}>
+                  <ActionButton
                     onClick={() => moveTaskDirect(task.id, "q1_urgent_important", "todo")}
-                    style={{ backgroundColor: "#221111", border: "1px solid #ff4d4d", color: "#ff4d4d", fontSize: "10px", padding: "2px 6px", borderRadius: "3px", cursor: "pointer" }}
+                    variant="secondary"
+                    loadingText="..."
+                    successText="✓"
+                    style={{ backgroundColor: "#221111", border: "1px solid #ff4d4d", color: "#ff4d4d", fontSize: "9px", padding: "1px 4px" }}
                   >
-                    В Q1
-                  </button>
-                  <button
+                    Q1
+                  </ActionButton>
+                  <ActionButton
                     onClick={() => moveTaskDirect(task.id, "q2_not_urgent_important", "todo")}
-                    style={{ backgroundColor: "#111b24", border: "1px solid #3498db", color: "#3498db", fontSize: "10px", padding: "2px 6px", borderRadius: "3px", cursor: "pointer" }}
+                    variant="secondary"
+                    loadingText="..."
+                    successText="✓"
+                    style={{ backgroundColor: "#111b24", border: "1px solid #3498db", color: "#3498db", fontSize: "9px", padding: "1px 4px" }}
                   >
-                    В Q2
-                  </button>
-                  <button
+                    Q2
+                  </ActionButton>
+                  <ActionButton
                     onClick={() => moveTaskDirect(task.id, "q3_urgent_not_important", "todo")}
-                    style={{ backgroundColor: "#242011", border: "1px solid #f1c40f", color: "#f1c40f", fontSize: "10px", padding: "2px 6px", borderRadius: "3px", cursor: "pointer" }}
+                    variant="secondary"
+                    loadingText="..."
+                    successText="✓"
+                    style={{ backgroundColor: "#242011", border: "1px solid #f1c40f", color: "#f1c40f", fontSize: "9px", padding: "1px 4px" }}
                   >
-                    В Q3
-                  </button>
-                  <button
+                    Q3
+                  </ActionButton>
+                  <ActionButton
                     onClick={() => moveTaskDirect(task.id, "q4_not_urgent_not_important", "todo")}
-                    style={{ backgroundColor: "#181818", border: "1px solid #666", color: "#888", fontSize: "10px", padding: "2px 6px", borderRadius: "3px", cursor: "pointer" }}
+                    variant="secondary"
+                    loadingText="..."
+                    successText="✓"
+                    style={{ backgroundColor: "#181818", border: "1px solid #666", color: "#888", fontSize: "9px", padding: "1px 4px" }}
                   >
-                    В Q4
-                  </button>
+                    Q4
+                  </ActionButton>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Сетка Квадрантов */}
+        {/* Сетка Квадрантов на всю ширину */}
         <div className="quadrants_grid">
           {QUADRANTS.map((quadrant) => {
             const quadrantTasks = tasks.filter((t) => t.quadrant === quadrant.id);
@@ -356,16 +431,18 @@ const TodoListPage: React.FC = () => {
                   border: `1px solid ${quadrant.borderColor}44`,
                   borderTop: `3px solid ${quadrant.borderColor}`,
                   borderRadius: "8px",
-                  padding: "12px",
+                  padding: "10px",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2px" }}>
-                  <div style={{ fontSize: "13px", fontWeight: "bold", color: quadrant.borderColor }}>
+                  <div style={{ fontSize: "12px", fontWeight: "bold", color: quadrant.borderColor }}>
                     [{quadrant.tag}] {quadrant.title}
                   </div>
                   <span style={{ fontSize: "11px", color: "#666" }}>{quadrantTasks.length}</span>
                 </div>
-                <div style={{ fontSize: "11px", color: "#777", marginBottom: "6px" }}>{quadrant.subtitle}</div>
+                <div style={{ fontSize: "10px", color: "#777", marginBottom: "6px" }}>{quadrant.subtitle}</div>
 
                 {renderProgressBar(quadrantTasks)}
 
@@ -383,13 +460,15 @@ const TodoListPage: React.FC = () => {
                           border: "1px dashed #262626",
                           borderRadius: "6px",
                           padding: "6px",
+                          display: "flex",
+                          flexDirection: "column",
                         }}
                       >
-                        <div style={{ fontSize: "11px", color: "#888", textAlign: "center", borderBottom: "1px solid #1c1c1c", paddingBottom: "3px", marginBottom: "6px" }}>
+                        <div style={{ fontSize: "10px", color: "#888", textAlign: "center", borderBottom: "1px solid #1c1c1c", paddingBottom: "3px", marginBottom: "6px" }}>
                           {col.label} ({colTasks.length})
                         </div>
 
-                        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        <div className="column_scroll_area">
                           {colTasks.map((t) => (
                             <div
                               key={t.id}
@@ -399,47 +478,72 @@ const TodoListPage: React.FC = () => {
                                 backgroundColor: col.id === "done" ? "#0f2112" : "#1a1a1a",
                                 border: `1px solid ${col.id === "done" ? "#00ff1555" : "#333"}`,
                                 borderRadius: "4px",
-                                padding: "6px",
+                                padding: "6px 8px",
                                 fontSize: "12px",
                               }}
                             >
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ textDecoration: col.id === "done" ? "line-through" : "none", color: col.id === "done" ? "#88e090" : "#ddd" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px" }}>
+                                <span
+                                  style={{
+                                    textDecoration: col.id === "done" ? "line-through" : "none",
+                                    color: col.id === "done" ? "#88e090" : "#ddd",
+                                    wordBreak: "break-word",
+                                    lineHeight: "1.35",
+                                    flex: 1,
+                                  }}
+                                >
                                   {t.title}
                                 </span>
-                                <button
+                                <ActionButton
                                   onClick={() => handleDeleteTask(t.id)}
-                                  style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "12px" }}
+                                  variant="danger"
+                                  loadingText="..."
+                                  successText="✓"
+                                  style={{
+                                    padding: "0px 4px",
+                                    fontSize: "11px",
+                                    lineHeight: "14px",
+                                    alignSelf: "flex-start",
+                                    flexShrink: 0,
+                                    minHeight: "16px",
+                                  }}
                                 >
                                   ×
-                                </button>
+                                </ActionButton>
                               </div>
 
-                              {/* Стрелочки смены статуса (для тапа на телефоне) */}
-                              <div style={{ display: "flex", gap: "4px", marginTop: "5px" }}>
+                              <div style={{ display: "flex", gap: "3px", marginTop: "6px", flexWrap: "wrap" }}>
                                 {col.id !== "todo" && (
-                                  <button
+                                  <ActionButton
                                     onClick={() => moveTaskDirect(t.id, quadrant.id, "todo")}
-                                    style={{ background: "#222", border: "none", color: "#aaa", fontSize: "10px", padding: "2px 5px", borderRadius: "2px", cursor: "pointer" }}
+                                    variant="secondary"
+                                    loadingText="..."
+                                    successText="✓"
+                                    style={{ background: "#222", color: "#aaa", fontSize: "9px", padding: "2px 4px" }}
                                   >
                                     ← Сделать
-                                  </button>
+                                  </ActionButton>
                                 )}
                                 {col.id !== "in_progress" && (
-                                  <button
+                                  <ActionButton
                                     onClick={() => moveTaskDirect(t.id, quadrant.id, "in_progress")}
-                                    style={{ background: "#113317", border: "none", color: "#32d64a", fontSize: "10px", padding: "2px 5px", borderRadius: "2px", cursor: "pointer" }}
+                                    variant="secondary"
+                                    loadingText="..."
+                                    successText="✓"
+                                    style={{ background: "#113317", color: "#32d64a", fontSize: "9px", padding: "2px 4px" }}
                                   >
                                     ⚙ В работе
-                                  </button>
+                                  </ActionButton>
                                 )}
                                 {col.id !== "done" && (
-                                  <button
+                                  <ActionButton
                                     onClick={() => moveTaskDirect(t.id, quadrant.id, "done")}
-                                    style={{ background: "#00ff15", border: "none", color: "#000", fontWeight: "bold", fontSize: "10px", padding: "2px 5px", borderRadius: "2px", cursor: "pointer" }}
+                                    loadingText="..."
+                                    successText="✓"
+                                    style={{ fontSize: "9px", padding: "2px 4px" }}
                                   >
                                     ✓ Готово
-                                  </button>
+                                  </ActionButton>
                                 )}
                               </div>
                             </div>

@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useAppSelector } from "../redux/store";
 import { getUserData, addBodyMetric, removeBodyMetric } from "../services/firebase";
 import { BodyMetric } from "../types";
+import ActionButton from "../components/ActionButton"; // <-- ИМПОРТ КНОПКИ
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +16,7 @@ import {
   Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import ForgeLoader from "../components/ForgeLoader";
 
 ChartJS.register(
   CategoryScale,
@@ -34,7 +36,6 @@ export interface SkufCalculation {
   ffmi: number;
 }
 
-// Формула Скуфометра на основе веса, складки и введенного роста
 export const calculateAdvancedSkufIndex = (
   weight: number,
   caliperMm: number = 10,
@@ -42,18 +43,13 @@ export const calculateAdvancedSkufIndex = (
 ): SkufCalculation => {
   const validHeight = heightCm > 0 ? heightCm : 175;
 
-  // 1. Процент жира по толщине складки калипера
   const fatPercent = Math.max(5, Math.min(45, 4 + caliperMm * 0.9));
-
-  // 2. Сухая масса (LBM)
   const fatMass = weight * (fatPercent / 100);
   const lbm = weight - fatMass;
 
-  // 3. Индекс мышечной массы FFMI относительно роста
   const heightM = validHeight / 100;
   const ffmi = lbm / (heightM * heightM);
 
-  // 4. Расчет индекса: штраф за жир и поощрение за плотность мышц
   const fatScore = (fatPercent - 8) * 5.5;
   const muscleBonus = Math.max(0, (ffmi - 18) * 4);
 
@@ -101,7 +97,6 @@ const BodyPage: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasPlayedRef = useRef<boolean>(false);
 
-  // Функция случайного воспроизведения
   const playRandomSound = () => {
     try {
       const randomIndex = Math.floor(Math.random() * SOUND_TRACKS.length);
@@ -125,7 +120,6 @@ const BodyPage: React.FC = () => {
     }
   };
 
-  // Автовоспроизведение через 1 секунду после загрузки
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!hasPlayedRef.current) {
@@ -133,7 +127,6 @@ const BodyPage: React.FC = () => {
       }
     }, 1000);
 
-    // Слушатель на случай, если браузер заблокировал строгий автоплей
     const handleFirstUserInteraction = () => {
       if (!hasPlayedRef.current) {
         playRandomSound();
@@ -177,8 +170,8 @@ const BodyPage: React.FC = () => {
     loadUserData();
   }, [user?.uid]);
 
-  const handleAddMetric = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Асинхронная отправка данных
+  const handleAddMetric = async () => {
     if (!user?.uid || !weight || !height) return;
 
     const newMetric: BodyMetric = {
@@ -191,16 +184,12 @@ const BodyPage: React.FC = () => {
       timestamp: new Date(date).getTime() || Date.now(),
     };
 
-    try {
-      await addBodyMetric(user.uid, newMetric);
-      const updated = [...metrics, newMetric].sort((a, b) => a.timestamp - b.timestamp);
-      setMetrics(updated);
-      setWeight("");
-      setCaliper("");
-      setNote("");
-    } catch (error: any) {
-      console.error("Ошибка при сохранении замера:", error.message);
-    }
+    await addBodyMetric(user.uid, newMetric);
+    const updated = [...metrics, newMetric].sort((a, b) => a.timestamp - b.timestamp);
+    setMetrics(updated);
+    setWeight("");
+    setCaliper("");
+    setNote("");
   };
 
   const handleDeleteMetric = async (metric: BodyMetric) => {
@@ -208,15 +197,10 @@ const BodyPage: React.FC = () => {
     const isConfirmed = window.confirm(`Удалить замер за ${metric.date}?`);
     if (!isConfirmed) return;
 
-    try {
-      await removeBodyMetric(user.uid, metric);
-      setMetrics((prev) => prev.filter((m) => m.id !== metric.id));
-    } catch (error: any) {
-      console.error("Ошибка при удалении замера:", error.message);
-    }
+    await removeBodyMetric(user.uid, metric);
+    setMetrics((prev) => prev.filter((m) => m.id !== metric.id));
   };
 
-  // Последние показатели
   const latestMetric = metrics[metrics.length - 1];
   const currentHeight = latestMetric?.height || parseFloat(height) || 163;
   const currentWeight = latestMetric?.weight || 74;
@@ -225,7 +209,6 @@ const BodyPage: React.FC = () => {
   const currentCalc = calculateAdvancedSkufIndex(currentWeight, currentCaliper, currentHeight);
   const status = getSkufStatus(currentCalc.index);
 
-  // Конфиг графика: ТОЛЬКО Скуфометр
   const chartData = {
     labels: metrics.map((m) => m.date),
     datasets: [
@@ -287,9 +270,17 @@ const BodyPage: React.FC = () => {
     },
   };
 
+  // if (isLoading) {
+  //   return <div style={{ padding: "20px", color: "#888" }}>Загрузка метрик тела...</div>;
+  // }
   if (isLoading) {
-    return <div style={{ padding: "20px", color: "#888" }}>Загрузка метрик тела...</div>;
-  }
+  return (
+    <ForgeLoader
+      title="КУЗНИЦА ТЕЛА // КАЛИБРОВКА"
+      logs={["SCANNING_METRICS...", "PARSING_CALIPER...", "CALCULATING_SKUF_INDEX..."]}
+    />
+  );
+}
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "900px", margin: "0 auto" }}>
@@ -381,9 +372,8 @@ const BodyPage: React.FC = () => {
         </div>
       )}
 
-      {/* Форма фиксации замера */}
-      <form
-        onSubmit={handleAddMetric}
+      {/* Форма фиксации замера с ActionButton */}
+      <div
         style={{
           backgroundColor: "#141414",
           border: "1px solid #222",
@@ -463,22 +453,18 @@ const BodyPage: React.FC = () => {
           </div>
         </div>
 
-        <button
-          type="submit"
-          style={{
-            marginTop: "15px",
-            padding: "10px 20px",
-            backgroundColor: "#00ff15",
-            color: "#000",
-            fontWeight: "bold",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          + Зафиксировать форму
-        </button>
-      </form>
+        {/* УМНАЯ КНОПКА С МГНОВЕННЫМ ОТКЛИКОМ */}
+        <div style={{ marginTop: "15px" }}>
+          <ActionButton
+            onClick={handleAddMetric}
+            loadingText="Синхронизация с базой..."
+            successText="✓ Форма зафиксирована!"
+            disabled={!weight || !height}
+          >
+            + Зафиксировать форму
+          </ActionButton>
+        </div>
+      </div>
 
       {/* Журнал замеров */}
       <div>
@@ -518,20 +504,15 @@ const BodyPage: React.FC = () => {
                     </span>
                     {m.note && <span style={{ color: "#888", fontSize: "13px" }}>({m.note})</span>}
                   </div>
-                  <button
+                  <ActionButton
                     onClick={() => handleDeleteMetric(m)}
-                    style={{
-                      backgroundColor: "transparent",
-                      color: "#ff4d4d",
-                      border: "1px solid #4a1515",
-                      borderRadius: "4px",
-                      padding: "4px 8px",
-                      cursor: "pointer",
-                      fontSize: "12px",
-                    }}
+                    variant="danger"
+                    loadingText="Удаление..."
+                    successText="✓ Удалено"
+                    style={{ padding: "4px 8px", fontSize: "12px" }}
                   >
                     Удалить
-                  </button>
+                  </ActionButton>
                 </div>
               );
             })}
