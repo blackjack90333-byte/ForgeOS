@@ -18,6 +18,7 @@ import {
 import { Line } from "react-chartjs-2";
 import ForgeLoader from "../components/ForgeLoader";
 
+
 ChartJS.register(
   CategoryScale,
   LinearScale,

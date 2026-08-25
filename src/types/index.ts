@@ -32,8 +32,10 @@ export interface RelapseRecord {
   id: string;
   timestamp: number;
   durationFormatted: string;
-  reason: string;
-  lesson: string;
+  reason: string;              // Триггер
+  substitute?: string;        // Чем заменишь (новое, опционально)
+  reward?: string;            // Награда (новое, опционально)
+  lesson: string;              // Вывод на будущее
 }
 
 // В UserDocument:
