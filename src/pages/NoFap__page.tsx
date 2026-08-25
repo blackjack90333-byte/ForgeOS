@@ -11,6 +11,7 @@ import { NofapLink, RelapseRecord } from "../types";
 import NofapGraph from "../components/NofapGraph";
 import ActionButton from "../components/ActionButton";
 import ForgeLoader from "../components/ForgeLoader";
+import ForgeImage from "../components/ForgeImage";
 
 interface Milestone {
   days: number;
@@ -53,7 +54,7 @@ const calculateTimeDifference = (timestamp: number, now: number): string => {
 
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
   const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((difference % (1000 * 60)) / 1000);
+  const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000*60));
   const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
   return `${days}д ${hours}ч ${minutes}м ${seconds}с`;
@@ -594,6 +595,12 @@ const NoFapPage: React.FC = () => {
 
         {/* База знаний */}
         <div style={{ marginBottom: "40px", marginTop: "30px" }}>
+          <ForgeImage
+            src="/images/nofap.png"
+            alt="Напоминание о вреде порно"
+            aspectRatio="741 / 435"
+            style={{ maxWidth: "741px", margin: "0 auto 25px auto" }}
+          />
           <h2>База знаний &amp; Фокус</h2>
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "15px" }}>
             <input
