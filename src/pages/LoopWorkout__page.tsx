@@ -5,6 +5,7 @@ import { LoopWorkoutConfig, WorkoutExerciseItem } from "../types";
 
 const LOCAL_STORAGE_KEY = "forgeos_loop_workout_config";
 const DEFAULT_MUSIC_URL = "https://youtu.be/nH3XHIgkN8w?si=FBPLwITFcAEimdTQ";
+const FIGHT_SOUND_URL = "/sound/drum_fight.mp3";
 
 const DEFAULT_CONFIG: LoopWorkoutConfig = {
   roundsCount: 4,
@@ -26,37 +27,6 @@ const DEFAULT_CONFIG: LoopWorkoutConfig = {
     { id: "12", name: "Рис пронация", workSec: 80, restSec: 20 },
     { id: "13", name: "Рис супинация", workSec: 80, restSec: 20 },
   ],
-};
-
-const playCymbalHit = () => {
-  try {
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContextClass) return;
-    const ctx = new AudioContextClass();
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(850, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.35);
-
-    filter.type = "highpass";
-    filter.frequency.setValueAtTime(600, ctx.currentTime);
-
-    gain.gain.setValueAtTime(0.7, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime + 0.4);
-  } catch (err) {
-    console.error("Audio error:", err);
-  }
 };
 
 type WorkoutPhase = "idle" | "prepare" | "work" | "rest" | "round_rest" | "finished";
@@ -82,6 +52,23 @@ const LoopWorkoutPage: React.FC = () => {
   const [musicInput, setMusicInput] = useState<string>(config.musicUrl || DEFAULT_MUSIC_URL);
 
   const timerRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Инициализация аудиофайла drum_fight.mp3
+  useEffect(() => {
+    const audio = new Audio(FIGHT_SOUND_URL);
+    audio.preload = "auto";
+    audioRef.current = audio;
+  }, []);
+
+  const playFightSound = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch((err) => {
+        console.warn("Автовоспроизведение звука заблокировано браузером:", err);
+      });
+    }
+  };
 
   const saveToLocalStorage = (newConfig: LoopWorkoutConfig) => {
     setConfig(newConfig);
@@ -92,10 +79,11 @@ const LoopWorkoutPage: React.FC = () => {
     }
   };
 
+  // Запуск звука за 3 секунды до конца текущей фазы
   useEffect(() => {
     if (phase !== "idle" && phase !== "finished" && !isPaused) {
-      if (secondsLeft === 3 || secondsLeft === 2 || secondsLeft === 1) {
-        playCymbalHit();
+      if (secondsLeft === 3) {
+        playFightSound();
       }
     }
   }, [secondsLeft, phase, isPaused]);
@@ -125,7 +113,6 @@ const LoopWorkoutPage: React.FC = () => {
     if (phase === "prepare") {
       setPhase("work");
       setSecondsLeft(Number(config.exercises[0]?.workSec) || 40);
-      playCymbalHit();
     } else if (phase === "work") {
       const rest = Number(currentEx?.restSec) || 0;
       if (rest > 0) {
@@ -141,7 +128,6 @@ const LoopWorkoutPage: React.FC = () => {
       setCurrentExerciseIndex(0);
       setPhase("work");
       setSecondsLeft(Number(config.exercises[0]?.workSec) || 40);
-      playCymbalHit();
     }
   };
 
@@ -154,7 +140,6 @@ const LoopWorkoutPage: React.FC = () => {
       setCurrentExerciseIndex(nextIndex);
       setPhase("work");
       setSecondsLeft(Number(config.exercises[nextIndex].workSec) || 40);
-      playCymbalHit();
     } else {
       if (!isLastRound) {
         setPhase("round_rest");
@@ -162,12 +147,10 @@ const LoopWorkoutPage: React.FC = () => {
       } else {
         setPhase("finished");
         setSecondsLeft(0);
-        playCymbalHit();
       }
     }
   };
 
-  // Валидация перед стартом
   const isWorkoutValid =
     config.exercises.length > 0 &&
     config.roundsCount > 0 &&
@@ -175,7 +158,7 @@ const LoopWorkoutPage: React.FC = () => {
 
   const handleStartWorkout = () => {
     if (!isWorkoutValid) {
-      alert("Заполните корректное время нагрузки (минимум 1 сек) для всех упражнений!");
+      alert("Заполните корректное время нагрузки для всех упражнений!");
       return;
     }
 
@@ -218,7 +201,6 @@ const LoopWorkoutPage: React.FC = () => {
     saveToLocalStorage({ ...config, exercises: updated });
   };
 
-  // Безопасный парсинг чисел (защита от букв и NaN)
   const parseSafeInt = (val: string, fallback: number = 0): number => {
     const clean = val.replace(/[^0-9]/g, "");
     if (!clean) return fallback;
@@ -248,7 +230,7 @@ const LoopWorkoutPage: React.FC = () => {
   const currentExercise = config.exercises[currentExerciseIndex];
 
   // --------------------------------------------------------------------------
-  // ЭКРАН 1: АКТИВНЫЙ РАННЕР ТРЕНИРОВКИ
+  // ЭКРАН 1: РАННЕР
   // --------------------------------------------------------------------------
   if (phase !== "idle") {
     let phaseTitle = "ПОДГОТОВКА";
@@ -256,7 +238,7 @@ const LoopWorkoutPage: React.FC = () => {
     let subText = "Приготовься к первому упражнению";
 
     if (phase === "work") {
-      phaseTitle = `РАБОТА: ${currentExercise?.name || ""}`;
+      phaseTitle = `УСИЛИЕ: ${currentExercise?.name || ""}`;
       phaseColor = "#00ff15";
       subText = `Круг ${currentRound} из ${config.roundsCount} • Упражнение ${currentExerciseIndex + 1}/${config.exercises.length}`;
     } else if (phase === "rest") {
@@ -275,16 +257,15 @@ const LoopWorkoutPage: React.FC = () => {
     }
 
     return (
-      <div style={{ minHeight: "100vh", backgroundColor: "#060608", padding: "20px", color: "#ddd", fontFamily: "monospace", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #222", paddingBottom: "12px" }}>
+      <div style={{ minHeight: "100vh", backgroundColor: "#060608", padding: "16px", color: "#ddd", fontFamily: "monospace", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #222", paddingBottom: "10px" }}>
           <div>
-            <span style={{ fontSize: "14px", color: "#666" }}>LOOP TRACKER //</span>
-            <span style={{ fontSize: "16px", fontWeight: "bold", color: "#fff", marginLeft: "8px" }}>
+            <span style={{ fontSize: "15px", fontWeight: "bold", color: "#fff", marginLeft: "6px" }}>
               КРУГ {currentRound} / {config.roundsCount}
             </span>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "8px" }}>
             <a
               href={config.musicUrl || DEFAULT_MUSIC_URL}
               target="_blank"
@@ -294,9 +275,9 @@ const LoopWorkoutPage: React.FC = () => {
                 border: "1px solid #f0932b",
                 color: "#f0932b",
                 textDecoration: "none",
-                padding: "8px 14px",
+                padding: "6px 12px",
                 borderRadius: "4px",
-                fontSize: "14px",
+                fontSize: "13px",
                 fontWeight: "bold",
               }}
             >
@@ -308,9 +289,9 @@ const LoopWorkoutPage: React.FC = () => {
                 backgroundColor: "#2a1212",
                 border: "1px solid #ff4d4d",
                 color: "#ff4d4d",
-                padding: "8px 14px",
+                padding: "6px 12px",
                 borderRadius: "4px",
-                fontSize: "14px",
+                fontSize: "13px",
                 fontWeight: "bold",
                 cursor: "pointer",
                 fontFamily: "monospace",
@@ -322,13 +303,13 @@ const LoopWorkoutPage: React.FC = () => {
         </div>
 
         <div style={{ textAlign: "center", margin: "auto 0" }}>
-          <div style={{ fontSize: "18px", color: phaseColor, letterSpacing: "1.5px", fontWeight: "bold", marginBottom: "8px", textTransform: "uppercase" }}>
+          <div style={{ fontSize: "17px", color: phaseColor, letterSpacing: "1.5px", fontWeight: "bold", marginBottom: "8px", textTransform: "uppercase" }}>
             {phaseTitle}
           </div>
 
           <div
             style={{
-              fontSize: "clamp(80px, 22vw, 150px)",
+              fontSize: "clamp(72px, 20vw, 140px)",
               fontWeight: "bold",
               color: phaseColor,
               lineHeight: "1",
@@ -339,12 +320,12 @@ const LoopWorkoutPage: React.FC = () => {
             {secondsLeft}s
           </div>
 
-          <div style={{ fontSize: "16px", color: "#aaa", marginTop: "16px", maxWidth: "560px", margin: "16px auto 0 auto", lineHeight: "1.4" }}>
+          <div style={{ fontSize: "15px", color: "#aaa", marginTop: "14px", maxWidth: "560px", margin: "14px auto 0 auto", lineHeight: "1.4" }}>
             {subText}
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: "14px", borderTop: "1px solid #222", paddingTop: "16px" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "12px", borderTop: "1px solid #222", paddingTop: "14px" }}>
           {phase !== "finished" ? (
             <>
               <button
@@ -353,9 +334,9 @@ const LoopWorkoutPage: React.FC = () => {
                   backgroundColor: isPaused ? "#00ff15" : "#1a1a1a",
                   color: isPaused ? "#000" : "#fff",
                   border: "1px solid #333",
-                  padding: "12px 28px",
+                  padding: "12px 24px",
                   borderRadius: "6px",
-                  fontSize: "16px",
+                  fontSize: "15px",
                   fontWeight: "bold",
                   cursor: "pointer",
                   fontFamily: "monospace",
@@ -370,9 +351,9 @@ const LoopWorkoutPage: React.FC = () => {
                   backgroundColor: "#111",
                   border: "1px solid #444",
                   color: "#aaa",
-                  padding: "12px 22px",
+                  padding: "12px 20px",
                   borderRadius: "6px",
-                  fontSize: "16px",
+                  fontSize: "15px",
                   fontWeight: "bold",
                   cursor: "pointer",
                   fontFamily: "monospace",
@@ -388,9 +369,9 @@ const LoopWorkoutPage: React.FC = () => {
                 backgroundColor: "#00ff15",
                 color: "#000",
                 border: "none",
-                padding: "14px 32px",
+                padding: "12px 28px",
                 borderRadius: "6px",
-                fontSize: "16px",
+                fontSize: "15px",
                 fontWeight: "bold",
                 cursor: "pointer",
                 fontFamily: "monospace",
@@ -405,11 +386,10 @@ const LoopWorkoutPage: React.FC = () => {
   }
 
   // --------------------------------------------------------------------------
-  // ЭКРАН 2: РЕДАКТОР С ЧИСТЫМИ ЧИСЛОВЫМИ ИНПУТАМИ БЕЗ СТРЕЛОК
+  // ЭКРАН 2: АДАПТИВНЫЙ РЕДАКТОР
   // --------------------------------------------------------------------------
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#080808", padding: "16px", color: "#ddd", fontFamily: "monospace" }}>
-      {/* Скрытие спиннеров на всех устройствах */}
+    <div style={{ minHeight: "100vh", backgroundColor: "#080808", padding: "12px 8px", color: "#ddd", fontFamily: "monospace" }}>
       <style>{`
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
@@ -423,15 +403,14 @@ const LoopWorkoutPage: React.FC = () => {
       `}</style>
 
       {/* Шапка */}
-      <div style={{ maxWidth: "900px", margin: "0 auto 14px auto", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #1a1a1a", paddingBottom: "10px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          {/* <Link to="/" style={{ color: "#777", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}>&larr; ДАШБОРД</Link> */}
-          <span style={{ color: "#00ff15", fontWeight: "bold", fontSize: "16px" }}>
+      <div style={{ maxWidth: "850px", margin: "0 auto 10px auto", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #1a1a1a", paddingBottom: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ color: "#00ff15", fontWeight: "bold", fontSize: "15px" }}>
             LOOP ТРЕНИРОВКА
           </span>
         </div>
 
-        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
           <a
             href={config.musicUrl || DEFAULT_MUSIC_URL}
             target="_blank"
@@ -441,9 +420,9 @@ const LoopWorkoutPage: React.FC = () => {
               border: "1px solid #f0932b",
               color: "#f0932b",
               textDecoration: "none",
-              padding: "6px 14px",
+              padding: "5px 10px",
               borderRadius: "4px",
-              fontSize: "13px",
+              fontSize: "12px",
               fontWeight: "bold",
             }}
           >
@@ -455,9 +434,9 @@ const LoopWorkoutPage: React.FC = () => {
               backgroundColor: "#111",
               border: "1px solid #333",
               color: "#888",
-              padding: "6px 10px",
+              padding: "5px 8px",
               borderRadius: "4px",
-              fontSize: "13px",
+              fontSize: "12px",
               cursor: "pointer",
             }}
           >
@@ -466,44 +445,44 @@ const LoopWorkoutPage: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "850px", margin: "0 auto" }}>
         {/* Инпут ссылки на музыку */}
         {showMusicEdit && (
-          <div style={{ backgroundColor: "#111", border: "1px solid #f0932b55", borderRadius: "6px", padding: "10px 12px", marginBottom: "12px", display: "flex", gap: "8px" }}>
+          <div style={{ backgroundColor: "#111", border: "1px solid #f0932b55", borderRadius: "6px", padding: "8px 10px", marginBottom: "10px", display: "flex", gap: "6px" }}>
             <input
               type="text"
-              placeholder="Вставь ссылку на YouTube плейлист..."
+              placeholder="YouTube URL..."
               value={musicInput}
               onChange={(e) => setMusicInput(e.target.value)}
-              style={{ flex: 1, backgroundColor: "#161616", border: "1px solid #333", color: "#fff", padding: "8px 12px", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px" }}
+              style={{ flex: 1, backgroundColor: "#161616", border: "1px solid #333", color: "#fff", padding: "6px 10px", borderRadius: "4px", fontFamily: "monospace", fontSize: "13px" }}
             />
             <button
               onClick={handleSaveMusicUrl}
-              style={{ backgroundColor: "#f0932b", color: "#000", border: "none", padding: "8px 16px", fontWeight: "bold", fontSize: "13px", cursor: "pointer", borderRadius: "4px" }}
+              style={{ backgroundColor: "#f0932b", color: "#000", border: "none", padding: "6px 14px", fontWeight: "bold", fontSize: "12px", cursor: "pointer", borderRadius: "4px" }}
             >
-              СОХРАНИТЬ
+              OK
             </button>
           </div>
         )}
 
-        {/* Панель настроек параметров тренировки */}
+        {/* Панель настроек тренировки */}
         <div
           style={{
             backgroundColor: "#0d0d0d",
-            border: "1px solid #1f1f1f",
+            border: "1px solid #1c1c1c",
             borderRadius: "6px",
-            padding: "12px 16px",
-            marginBottom: "12px",
+            padding: "10px 12px",
+            marginBottom: "10px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             flexWrap: "wrap",
-            gap: "12px",
+            gap: "10px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ fontSize: "13px", color: "#888", fontWeight: "bold" }}>КРУГОВ:</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <span style={{ fontSize: "12px", color: "#888", fontWeight: "bold" }}>КРУГОВ:</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -517,12 +496,12 @@ const LoopWorkoutPage: React.FC = () => {
                     roundsCount: parseSafeInt(e.target.value, 1),
                   })
                 }
-                style={{ width: "48px", padding: "5px 4px", backgroundColor: "#141414", border: "1px solid #333", color: "#00ff15", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "15px", textAlign: "center" }}
+                style={{ width: "42px", padding: "4px", backgroundColor: "#141414", border: "1px solid #333", color: "#00ff15", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px", textAlign: "center" }}
               />
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ fontSize: "13px", color: "#888", fontWeight: "bold" }}>ОТДЫХ КРУГА:</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <span style={{ fontSize: "12px", color: "#888", fontWeight: "bold" }}>ОТДЫХ:</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -535,13 +514,13 @@ const LoopWorkoutPage: React.FC = () => {
                     restBetweenRoundsSec: parseSafeInt(e.target.value, 0),
                   })
                 }
-                style={{ width: "54px", padding: "5px 4px", backgroundColor: "#141414", border: "1px solid #333", color: "#3498db", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "15px", textAlign: "center" }}
+                style={{ width: "48px", padding: "4px", backgroundColor: "#141414", border: "1px solid #333", color: "#3498db", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px", textAlign: "center" }}
               />
-              <span style={{ fontSize: "12px", color: "#666" }}>сек</span>
+              <span style={{ fontSize: "11px", color: "#666" }}>сек</span>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ fontSize: "13px", color: "#888", fontWeight: "bold" }}>СТАРТ:</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <span style={{ fontSize: "12px", color: "#888", fontWeight: "bold" }}>СТАРТ:</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -554,20 +533,21 @@ const LoopWorkoutPage: React.FC = () => {
                     prepareSec: parseSafeInt(e.target.value, 0),
                   })
                 }
-                style={{ width: "54px", padding: "5px 4px", backgroundColor: "#141414", border: "1px solid #333", color: "#f0932b", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "15px", textAlign: "center" }}
+                style={{ width: "48px", padding: "4px", backgroundColor: "#141414", border: "1px solid #333", color: "#f0932b", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px", textAlign: "center" }}
               />
-              <span style={{ fontSize: "12px", color: "#666" }}>сек</span>
+              <span style={{ fontSize: "11px", color: "#666" }}>сек</span>
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div style={{ display: "flex", gap: "8px", width: "100%", justifyContent: "space-between" }}>
             <button
               onClick={handleAddExercise}
               style={{
+                flex: 1,
                 backgroundColor: "#161616",
                 border: "1px solid #00ff1566",
                 color: "#00ff15",
-                padding: "8px 14px",
+                padding: "8px",
                 borderRadius: "4px",
                 fontSize: "13px",
                 cursor: "pointer",
@@ -582,16 +562,16 @@ const LoopWorkoutPage: React.FC = () => {
               onClick={handleStartWorkout}
               disabled={!isWorkoutValid}
               style={{
+                flex: 2,
                 backgroundColor: isWorkoutValid ? "#00ff15" : "#222",
                 color: isWorkoutValid ? "#000" : "#666",
                 border: "none",
                 borderRadius: "4px",
-                padding: "8px 18px",
+                padding: "8px 12px",
                 fontSize: "14px",
                 fontWeight: "bold",
                 cursor: isWorkoutValid ? "pointer" : "not-allowed",
                 fontFamily: "monospace",
-                boxShadow: isWorkoutValid ? "0 0 12px rgba(0, 255, 21, 0.25)" : "none",
               }}
             >
               ▶ СТАРТ ({config.roundsCount} КР)
@@ -599,39 +579,59 @@ const LoopWorkoutPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Список упражнений */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        {/* Шапка колонок таблицы */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "24px 1fr 54px 54px 22px",
+            alignItems: "center",
+            gap: "6px",
+            padding: "4px 8px",
+            fontSize: "11px",
+            color: "#666",
+            fontWeight: "bold",
+          }}
+        >
+          <span>#</span>
+          <span>УПРАЖНЕНИЕ</span>
+          <span style={{ textAlign: "center", color: "#00ff15" }}>УСИЛИЕ</span>
+          <span style={{ textAlign: "center", color: "#3498db" }}>ОТДЫХ</span>
+          <span></span>
+        </div>
+
+        {/* Список строк упражнений */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           {config.exercises.map((exercise, index) => (
             <div
               key={exercise.id}
               style={{
                 backgroundColor: "#0c0c0e",
                 border: "1px solid #1c1f26",
-                borderRadius: "5px",
-                padding: "6px 12px",
+                borderRadius: "4px",
+                padding: "4px 8px",
                 display: "grid",
-                gridTemplateColumns: "30px 1fr 110px 110px 28px",
+                gridTemplateColumns: "24px 1fr 54px 54px 22px",
                 alignItems: "center",
-                gap: "10px",
+                gap: "6px",
               }}
             >
-              <span style={{ fontSize: "14px", color: "#555", fontWeight: "bold" }}>
-                #{index + 1}
+              <span style={{ fontSize: "13px", color: "#555", fontWeight: "bold" }}>
+                {index + 1}
               </span>
 
               <input
                 type="text"
                 value={exercise.name}
-                placeholder="Название упражнения..."
+                placeholder="Упражнение..."
                 onChange={(e) => handleExerciseChange(exercise.id, "name", e.target.value)}
                 style={{
                   backgroundColor: "transparent",
                   border: "none",
-                  borderBottom: "1px solid #252830",
+                  borderBottom: "1px solid #222",
                   color: "#fff",
-                  padding: "6px 8px",
+                  padding: "4px 2px",
                   fontFamily: "monospace",
-                  fontSize: "15px",
+                  fontSize: "14px",
                   width: "100%",
                   boxSizing: "border-box",
                   outline: "none",
@@ -639,71 +639,65 @@ const LoopWorkoutPage: React.FC = () => {
               />
 
               {/* УСИЛИЕ */}
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <input
-                  type="number"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  min={1}
-                  value={exercise.workSec || ""}
-                  onChange={(e) => handleExerciseChange(exercise.id, "workSec", e.target.value)}
-                  style={{
-                    backgroundColor: "#141416",
-                    border: `1px solid ${exercise.workSec > 0 ? "#00ff1544" : "#ff4d4d"}`,
-                    color: exercise.workSec > 0 ? "#00ff15" : "#ff4d4d",
-                    padding: "5px 4px",
-                    borderRadius: "4px",
-                    fontFamily: "monospace",
-                    fontSize: "15px",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    width: "48px",
-                    boxSizing: "border-box",
-                  }}
-                  title="Время усилия в секундах"
-                />
-                <span style={{ fontSize: "11px", color: "#777", fontWeight: "bold" }}>УСИЛИЕ</span>
-              </div>
+              <input
+                type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                min={1}
+                value={exercise.workSec || ""}
+                onChange={(e) => handleExerciseChange(exercise.id, "workSec", e.target.value)}
+                style={{
+                  backgroundColor: "#141416",
+                  border: `1px solid ${exercise.workSec > 0 ? "#00ff1544" : "#ff4d4d"}`,
+                  color: exercise.workSec > 0 ? "#00ff15" : "#ff4d4d",
+                  padding: "6px 2px",
+                  borderRadius: "4px",
+                  fontFamily: "monospace",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  width: "100%",
+                  boxSizing: "border-box",
+                }}
+                title="Усилие (сек)"
+              />
 
               {/* ОТДЫХ */}
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <input
-                  type="number"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  min={0}
-                  value={exercise.restSec ?? ""}
-                  onChange={(e) => handleExerciseChange(exercise.id, "restSec", e.target.value)}
-                  style={{
-                    backgroundColor: "#141416",
-                    border: "1px solid #3498db44",
-                    color: "#3498db",
-                    padding: "5px 4px",
-                    borderRadius: "4px",
-                    fontFamily: "monospace",
-                    fontSize: "15px",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    width: "48px",
-                    boxSizing: "border-box",
-                  }}
-                  title="Время отдыха в секундах"
-                />
-                <span style={{ fontSize: "11px", color: "#777", fontWeight: "bold" }}>ОТДЫХ</span>
-              </div>
+              <input
+                type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                min={0}
+                value={exercise.restSec ?? ""}
+                onChange={(e) => handleExerciseChange(exercise.id, "restSec", e.target.value)}
+                style={{
+                  backgroundColor: "#141416",
+                  border: "1px solid #3498db44",
+                  color: "#3498db",
+                  padding: "6px 2px",
+                  borderRadius: "4px",
+                  fontFamily: "monospace",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  width: "100%",
+                  boxSizing: "border-box",
+                }}
+                title="Отдых (сек)"
+              />
 
               <button
                 onClick={() => handleRemoveExercise(exercise.id)}
                 style={{
                   background: "none",
                   border: "none",
-                  color: "#666",
-                  fontSize: "18px",
+                  color: "#555",
+                  fontSize: "16px",
                   cursor: "pointer",
-                  padding: "0 4px",
+                  padding: 0,
                   textAlign: "center",
                 }}
-                title="Удалить строку"
+                title="Удалить"
               >
                 &times;
               </button>
