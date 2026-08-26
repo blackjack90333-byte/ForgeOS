@@ -334,6 +334,37 @@ const DashboardPage: React.FC = () => {
             Начать квест →
           </div>
         </Link>
+
+
+        {/* Карточка: Кодекс Навыков & Ачивки */}
+        <Link
+          to="/skills_page"
+          style={{
+            textDecoration: "none",
+            backgroundColor: "#111",
+            border: "1px solid #f0932b44",
+            borderRadius: "8px",
+            padding: "20px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <span style={{ fontSize: "11px", color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>
+              Опыт &bull; Компетенции
+            </span>
+            <h2 style={{ color: "#f0932b", margin: "8px 0 4px 0", fontSize: "22px" }}>
+              Кодекс Навыков
+            </h2>
+            <p style={{ color: "#aaa", fontSize: "14px", margin: "10px 0 0 0" }}>
+              Реестр закрытых систем: автозвук, код, крипта, форма
+            </p>
+          </div>
+          <div style={{ marginTop: "20px", color: "#f0932b", fontSize: "13px", fontWeight: "bold" }}>
+            Открыть реестр &rarr;
+          </div>
+        </Link>
       </div>
     </div>
   );

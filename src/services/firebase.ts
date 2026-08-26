@@ -18,7 +18,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { NofapLink, UserDocument,BodyMetric,EisenhowerTask } from "../types";
+import { NofapLink, UserDocument,BodyMetric,EisenhowerTask,SkillAchievement } from "../types";
 // В src/services/firebase.ts
 // import { EisenhowerTask } from "../types";
 
@@ -91,6 +91,10 @@ export const updateUserData = async <K extends keyof UserDocument>(
     console.error("Ошибка при обновлении данных пользователя:", error.message);
     throw error;
   }
+};
+
+export const saveUserSkills = async (uid: string, skills: SkillAchievement[]) => {
+  return await updateUserData(uid, "skills_tree" as any, JSON.stringify(skills));
 };
 
 export const addLinkToUser_nofap = async (

@@ -38,6 +38,16 @@ export interface RelapseRecord {
   lesson: string;              // Вывод на будущее
 }
 
+
+
+export interface SkillAchievement {
+  id: string;
+  title: string;
+  desc: string;
+  level: number; // От 0 до 10
+  unlockedAt: number;
+}
+
 // В UserDocument:
 // export interface UserDocument {
 //   // ... твои поля

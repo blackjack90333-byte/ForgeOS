@@ -7,6 +7,7 @@ import AppRoutes from "./routes/AppRoutes";
 import { store } from "./redux/store";
 import { AuthUser } from "./types";
 
+
 function AppRoutesWrap(): React.JSX.Element {
   const dispatch = useDispatch();
 

@@ -9,12 +9,11 @@ import DashboardPage from "../pages/Dashboard__page";
 import NoFapPage from "../pages/NoFap__page";
 import CountMoneyPage from "../pages/CountMoney__page";
 import Logout from "../pages/Logout__page";
-import { getUserData } from "../services/firebase";
-
 import BodyPage from "../pages/Body__page";
 import TodoListPage from "../pages/TodoList__page";
 import QuestPage from "../pages/Quest__page";
-
+import SkillsPage from "../pages/Skills__page";
+import BackgroundAudioPlayer from "../components/BackgroundAudioPlayer";
 
 export interface AppRouteItem {
   path: string;
@@ -28,7 +27,7 @@ interface HeaderProps {
   routes: AppRouteItem[];
 }
 
-const Header: React.FC<HeaderProps> = ({ routes }) => {
+const Header: React.FC<HeaderProps> = () => {
   const user = useAppSelector((state) => state.auth.user);
   const [currentTime, setCurrentTime] = React.useState<Date>(new Date());
 
@@ -51,98 +50,32 @@ const Header: React.FC<HeaderProps> = ({ routes }) => {
   };
 
   return (
-    <div className="nav_wrap">
+    <div
+      className="nav_wrap"
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: "10px",
+        // padding: "0 10px",
+      }}
+    >
       {!user ? (
         <p className="nav_guest">Вы не в системе... войдите...</p>
       ) : (
-        <div>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <Link to="/">
             <button className="nav_link">Навигация</button>
           </Link>
+          {/* Плеер фоновой музыки в шапке */}
+          <BackgroundAudioPlayer videoId="RG2IK8oRZNA" />
+          <div className="current-time">{formatDateTime(currentTime)}</div>
         </div>
       )}
-      <div className="current-time">{formatDateTime(currentTime)}</div>
     </div>
   );
 };
-
-// const MainPage: React.FC = () => {
-//   const user = useAppSelector((state) => state.auth.user);
-//   const visibleRoutes = routeConfig.filter(
-//     (item) => item.path !== "/" && (!item.isPrivate || Boolean(user))
-//   );
-
-//   React.useEffect(() => {
-//     const fetchUserData = async () => {
-//       if (!user?.uid) return;
-//       try {
-//         const data = await getUserData(user.uid);
-//         console.log("data", data);
-//       } catch (err) {
-//         console.error("Ошибка при получении данных на главной:", err);
-//       }
-//     };
-
-//     fetchUserData();
-//   }, [user?.uid]);
-
-//   return (
-//     <div style={{ padding: "10px" }}>
-//       {user && (
-//         <div style={{ marginBottom: "10px" }}>
-//           <p>
-//             <strong>Email:</strong> {user.email}
-//           </p>
-//           <p>
-//             <strong>Имя:</strong> {user.displayName}
-//           </p>
-//           {user.photoURL && (
-//             <img
-//               src={user.photoURL}
-//               alt="Avatar"
-//               style={{ width: "50px", borderRadius: "50%" }}
-//             />
-//           )}
-//         </div>
-//       )}
-
-//       <div>
-//         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-//           {visibleRoutes.map((route, index) => {
-//             if (user && route.isVisibleWhenLoggined) {
-//               return (
-//                 <Link to={route.path} key={route.path || index}>
-//                   <button className="nav_link">
-//                     {route.label || route.path}
-//                   </button>
-//                 </Link>
-//               );
-//             } else if (!user && !route.isVisibleWhenLoggined) {
-//               return (
-//                 <div key={route.path || index}>
-//                   <Link
-//                     to={route.path}
-//                     style={{
-//                       textDecoration: "none",
-//                       color: "blue",
-//                       padding: "5px 10px",
-//                       border: "1px solid #ccc",
-//                       borderRadius: "5px",
-//                       backgroundColor: "#fff",
-//                     }}
-//                   >
-//                     {route.label || route.path}
-//                   </Link>
-//                 </div>
-//               );
-//             }
-//             return <div key={route.path || index} />;
-//           })}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
 
 const routeConfig: AppRouteItem[] = [
   {
@@ -152,7 +85,6 @@ const routeConfig: AppRouteItem[] = [
     isVisibleWhenLoggined: false,
     label: "Вход",
   },
-  // <Route path="/body_page" element={<BodyPage />} />
   {
     path: "/body_page",
     element: <BodyPage />,
@@ -188,12 +120,9 @@ const routeConfig: AppRouteItem[] = [
     isVisibleWhenLoggined: true,
     label: "Сделать квест (Цепочка дел)",
   },
-  // <Route path="/quest_page" element={<QuestPage />} />
-  // <Route path="/todolist_page" element={<TodoListPage />} />
   {
     path: "/",
     element: <DashboardPage />,
-    // <Route path="/" element={<DashboardPage />} />
     isPrivate: true,
     isVisibleWhenLoggined: true,
     label: "Главный Дашборд",
@@ -204,6 +133,13 @@ const routeConfig: AppRouteItem[] = [
     isPrivate: true,
     isVisibleWhenLoggined: true,
     label: "Трекер денег",
+  },
+  {
+    path: "/skills_page",
+    element: <SkillsPage />,
+    isPrivate: true,
+    isVisibleWhenLoggined: true,
+    label: "Мои скиллы и ачивки",
   },
 ];
 
