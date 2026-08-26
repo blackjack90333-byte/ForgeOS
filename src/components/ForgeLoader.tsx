@@ -47,7 +47,7 @@ export const ForgeLoader: React.FC<ForgeLoaderProps> = ({
         alignItems: "center",
         justifyContent: "center",
         fontFamily: "monospace",
-        backgroundColor: "#080808",
+        backgroundColor: "#08080800",
         color: "#fff",
         padding: "20px",
         boxSizing: "border-box",
@@ -148,7 +148,7 @@ export const ForgeLoader: React.FC<ForgeLoaderProps> = ({
         style={{
           width: "200px",
           height: "3px",
-          backgroundColor: "#161616",
+          backgroundColor: "#000000",
           borderRadius: "2px",
           overflow: "hidden",
           position: "relative",

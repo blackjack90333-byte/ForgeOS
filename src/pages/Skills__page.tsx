@@ -28,6 +28,58 @@ https://static.wol.su/assets/uploads/posts/2026-06/611c2d145d_12.webp
   },
 ];
 
+interface MindRule {
+  id: string;
+  q: string;
+  a: string;
+  tag: string;
+}
+
+const MINDSET_RULES: MindRule[] = [
+  {
+    id: "rule_horizon_sprints",
+    tag: "ГОРИЗОНТ ПЛАНИРОВАНИЯ",
+    q: "Почему нельзя ставить глобальные цели на годы вперед?",
+    a: "Дофамин от мороженого мозг получает за 5 секунд, а статус чемпиона по бодибилдингу — через 15 лет. Не пытайся «перейти мост до того, как ты до него дошел». Ставь спринты максимум на 1–2 недели: короткими перебежками двигаться в разы проще, мозг видит близкую награду и не впадает в ступор от масштаба.",
+  },
+  {
+    id: "rule_resistance",
+    tag: "НЕЙРОБИОЛОГИЯ",
+    q: "Вначале возникает жесткое сопротивление. Как быть?",
+    a: "Мозг сопротивляется новому: он физически не любит растить дендритные шипики. Сперва будет ломать и тормозить, ЗАТО ПОТОМ ЕГО ЗА УШИ НЕ ОТТАЩИШЬ.",
+  },
+  {
+    id: "rule_fear",
+    tag: "СТРАХ",
+    q: "Если делаешь что-то в первый раз — всегда страшно?",
+    a: "Первый раз страшно ВСЕГДА. Трус боится и не делает. Смелый так же боится, но всё равно ДЕЛАЕТ. Страх перед дракой тренируется только на ринге.",
+  },
+  {
+    id: "rule_perfectionism",
+    tag: "ЛОВУШКА ХП",
+    q: "Что такое перфекционизм на самом деле?",
+    a: "Невозможность ни начать, ни закончить, пока любая мелочь не будет ИДЕАЛЬНОЙ. Это иллюзия, будто у тебя 1 ХП и нет права на ошибку. Запомни: у тебя почти бесконечно ХП, ошибки — это просто сырые данные.",
+  },
+  {
+    id: "rule_dopamine_trap",
+    tag: "ДОФАМИН",
+    q: "Умом понимаешь, что надо делать, но нет тяги. В чем дело?",
+    a: "Сначала действие — потом втягиваешься. А чтобы стартовать, нужен чистый дофамин. Если он слит на телефон, рилсы и соцсети — топливный бак пуст.",
+  },
+  {
+    id: "rule_goals",
+    tag: "СТРАТЕГИЯ",
+    q: "Как гарантированно дожимать цели?",
+    a: "1. Мы никому ничего не говорим заранее (иначе мозг получает фальшивую награду и лишает стимула).\n2. Если сказали — работаем строго на дисциплине, даже когда стимула нет и делать вообще не хочется.",
+  },
+  {
+    id: "rule_monkey",
+    tag: "ПРИВЫЧКА",
+    q: "Почему так лень садиться за незнакомый хардкор?",
+    a: "Максимум дофамина мозг выдает там, где результат предсказуем и понятен. Обезьяна жестко кайфовала, когда 3 одинаковые фигуры сходились: «УАУАУААУ, СЕЙЧАС БУДЕТ ВИНОГРАДНЫЙ СОК!» В неизвестности сока сразу не видно — мозг приходится заставлять вручную.",
+  },
+];
+
 const isImageUrl = (url: string): boolean => {
   return /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg)(?:\?.*)?)/i.test(url.trim());
 };
@@ -37,6 +89,8 @@ const SkillsPage: React.FC = () => {
   const [skills, setSkills] = useState<SkillAchievement[]>([]);
   const [selectedSkill, setSelectedSkill] = useState<SkillAchievement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [showMindset, setShowMindset] = useState<boolean>(false);
+  const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
 
   // Модалка (создание или редактирование)
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -75,7 +129,6 @@ const SkillsPage: React.FC = () => {
     loadSkills();
   }, [user?.uid]);
 
-  // Открыть модалку на создание
   const handleOpenCreateModal = () => {
     setEditingSkillId(null);
     setFormTitle("");
@@ -84,7 +137,6 @@ const SkillsPage: React.FC = () => {
     setShowModal(true);
   };
 
-  // Открыть модалку на редактирование
   const handleOpenEditModal = (skill: SkillAchievement) => {
     setEditingSkillId(skill.id);
     setFormTitle(skill.title);
@@ -93,7 +145,6 @@ const SkillsPage: React.FC = () => {
     setShowModal(true);
   };
 
-  // Сохранить навык (новый или отредактированный)
   const handleSaveSkill = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!formTitle.trim() || !user?.uid) return;
@@ -101,7 +152,6 @@ const SkillsPage: React.FC = () => {
     let updated: SkillAchievement[];
 
     if (editingSkillId) {
-      // Редактирование
       updated = skills.map((s) => {
         if (s.id === editingSkillId) {
           const edited = {
@@ -116,7 +166,6 @@ const SkillsPage: React.FC = () => {
         return s;
       });
     } else {
-      // Создание
       const newSkill: SkillAchievement = {
         id: `skill_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`,
         title: formTitle.trim(),
@@ -133,7 +182,6 @@ const SkillsPage: React.FC = () => {
     await saveUserSkills(user.uid, updated);
   };
 
-  // Быстрое изменение уровня (+1 / -1) прямо из инспектора
   const handleQuickLevelChange = async (skillId: string, delta: number) => {
     if (!user?.uid) return;
 
@@ -164,7 +212,10 @@ const SkillsPage: React.FC = () => {
     await saveUserSkills(user.uid, updated);
   };
 
-  // Построчный рендер: сохраняет порядок текста и картинок
+  const toggleAccordion = (id: string) => {
+    setOpenAccordionId((prev) => (prev === id ? null : id));
+  };
+
   const renderDescriptionInLineOrder = (text: string) => {
     const lines = text.split("\n");
 
@@ -241,6 +292,28 @@ const SkillsPage: React.FC = () => {
           background: #141414;
           border-color: #00ff1588;
         }
+        .skill_add_btn_row {
+          width: 100%;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          justifyContent: center;
+          padding: 8px 12px;
+          cursor: pointer;
+          border-radius: 4px;
+          border: 1px solid #00ff15;
+          background: #00ff151a;
+          color: #00ff15;
+          font-weight: bold;
+          font-size: 13px;
+          font-family: monospace;
+          margin-bottom: 8px;
+          transition: all 0.15s ease;
+        }
+        .skill_add_btn_row:hover {
+          background: #00ff15;
+          color: #000;
+        }
         @media (min-width: 850px) {
           .skills_layout {
             display: grid;
@@ -252,33 +325,114 @@ const SkillsPage: React.FC = () => {
       `}</style>
 
       {/* Верхняя навигация */}
-      <div style={{ maxWidth: "1100px", margin: "0 auto 16px auto", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #1f1f1f", paddingBottom: "10px" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto 16px auto", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #1f1f1f", paddingBottom: "10px", flexWrap: "wrap", gap: "10px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "13px", letterSpacing: "1px" }}>
-          <Link to="/" style={{ color: "#666", textDecoration: "none" }}>&larr; ДАШБОРД</Link>
           <span style={{ color: "#00ff15", fontWeight: "bold" }}>
-            НАВЫКИ // В ЧЕМ РАЗОБРАЛСЯ ({skills.length})
+            СКИЛЛЫ И АЧИВКИ ({skills.length})
           </span>
         </div>
-        <button
-          onClick={handleOpenCreateModal}
-          style={{
-            backgroundColor: "#111",
-            border: "1px solid #00ff15",
-            color: "#00ff15",
-            padding: "6px 14px",
-            fontSize: "12px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontFamily: "monospace",
-            borderRadius: "4px",
-          }}
-        >
-          + ДОБАВИТЬ НАВЫК
-        </button>
+
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            onClick={() => setShowMindset(!showMindset)}
+            style={{
+              backgroundColor: showMindset ? "#142416" : "#111",
+              border: `1px solid ${showMindset ? "#00ff15" : "#333"}`,
+              color: showMindset ? "#00ff15" : "#aaa",
+              padding: "6px 12px",
+              fontSize: "12px",
+              cursor: "pointer",
+              fontFamily: "monospace",
+              borderRadius: "4px",
+            }}
+          >
+            {showMindset ? "✕ СКРЫТЬ БАЗУ" : "🧠 ПАМЯТКА: НЕЙРОБАЗА"}
+          </button>
+        </div>
       </div>
 
+      {/* Блок «НЕЙРОБАЗА // ПСИХОЛОГИЯ ПРОКАЧКИ» (Адаптивный аккордеон) */}
+      {showMindset && (
+        <div
+          style={{
+            maxWidth: "1100px",
+            margin: "0 auto 20px auto",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#00ff152b",
+              borderLeft: "3px solid #00ff15",
+              borderRadius: "6px",
+              padding: "10px",
+            }}
+          >
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "8px" }}>
+              {MINDSET_RULES.map((rule) => {
+                const isOpen = openAccordionId === rule.id;
+
+                return (
+                  <div
+                    key={rule.id}
+                    style={{
+                      backgroundColor: "#111",
+                      border: `1px solid ${isOpen ? "#00ff1566" : "#1a1a1a"}`,
+                      borderRadius: "4px",
+                      overflow: "hidden",
+                      transition: "border-color 0.2s ease",
+                    }}
+                  >
+                    {/* Кликабельный заголовок-вопрос */}
+                    <div
+                      onClick={() => toggleAccordion(rule.id)}
+                      style={{
+                        padding: "12px",
+                        cursor: "pointer",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
+                      <div>
+                        {/* <span style={{ fontSize: "9px", color: "#00ff15", backgroundColor: "#00ff1518", border: "1px solid #00ff1533", padding: "1px 5px", borderRadius: "2px", display: "inline-block", marginBottom: "4px" }}>
+                          {rule.tag}
+                        </span> */}
+                        <div style={{ fontSize: "14px", fontWeight: "bold", color: "#fff" }}>
+                          {rule.q}
+                        </div>
+                      </div>
+
+                      <span style={{ color: isOpen ? "#00ff15" : "#666", fontSize: "12px", fontWeight: "bold", minWidth: "16px", textAlign: "right" }}>
+                        {isOpen ? "▲" : "▼"}
+                      </span>
+                    </div>
+
+                    {/* Ответ (раскрывается только если активен) */}
+                    {isOpen && (
+                      <div
+                        style={{
+                          fontSize: "13px",
+                          color: "#8c8c8c",
+                          padding: "0 12px 12px 12px",
+                          borderTop: "1px solid #1a1a1a",
+                          paddingTop: "8px",
+                          whiteSpace: "pre-line",
+                        }}
+                      >
+                        {rule.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="skills_layout">
-        {/* ЛЕВАЯ КОЛОНКА: СПИСОК НАВЫКОВ */}
+        {/* ЛЕВАЯ КОЛОНКА: СПИСОК НАВЫКОВ + КНОПКА ДОБАВЛЕНИЯ ВВЕРХУ */}
         <div
           style={{
             backgroundColor: "#0c0c0c",
@@ -289,6 +443,14 @@ const SkillsPage: React.FC = () => {
             overflowY: "auto",
           }}
         >
+          {/* Кнопка "Добавить навык" прямо в строке столбца */}
+          <button
+            onClick={handleOpenCreateModal}
+            className="skill_add_btn_row"
+          >
+            + ДОБАВИТЬ НАВЫК
+          </button>
+
           {skills.length === 0 ? (
             <div style={{ color: "#666", textAlign: "center", padding: "20px" }}>
               Список пуст. Добавь свой первый навык.
@@ -342,7 +504,7 @@ const SkillsPage: React.FC = () => {
               <div style={{ borderBottom: "1px solid #1c1c1c", paddingBottom: "12px", marginBottom: "14px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: "10px", color: "#666", letterSpacing: "1px", textTransform: "uppercase" }}>
-                    ОПИСАНИЕ НАВЫКА
+                    НАВЫК
                   </span>
                   <button
                     onClick={() => handleOpenEditModal(selectedSkill)}
@@ -444,9 +606,7 @@ const SkillsPage: React.FC = () => {
 
               {/* Нижняя панель действий */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1c1c1c", paddingTop: "12px" }}>
-                <span style={{ fontSize: "11px", color: "#00ff15" }}>
-                  {/* ✓ ОСВОЕНО */}
-                </span>
+                <span style={{ fontSize: "11px", color: "#00ff15" }}></span>
                 <button
                   onClick={() => handleDeleteSkill(selectedSkill.id)}
                   style={{
