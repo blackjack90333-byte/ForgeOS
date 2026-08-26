@@ -74,8 +74,11 @@ export interface UserDocument {
   money_count?: MoneyCount;
   money_history?: string; // сериализованный JSON массив MoneyHistoryItem[]
   money_goals?: string;   // сериализованный JSON массив MoneyGoal[]
-  eisenhower_tasks?: string; // <--- ДОБАВЬ ЭТУ СТРОКУ
+  eisenhower_tasks?: string;
   nofap_relapses?: string; // JSON строка RelapseRecord[]
+  skills_tree?: string;    // JSON строка SkillAchievement[]
+  body_metrics?: BodyMetric[];
+  user_avatar_url?: string; // Ссылка на аватар персонажа
 }
 
 export interface BodyMetric {
