@@ -18,7 +18,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { NofapLink, UserDocument,BodyMetric,EisenhowerTask,SkillAchievement } from "../types";
+import { NofapLink, UserDocument,BodyMetric,EisenhowerTask,SkillAchievement,LoopWorkoutConfig } from "../types";
 // В src/services/firebase.ts
 // import { EisenhowerTask } from "../types";
 
@@ -95,6 +95,10 @@ export const updateUserData = async <K extends keyof UserDocument>(
 
 export const saveUserSkills = async (uid: string, skills: SkillAchievement[]) => {
   return await updateUserData(uid, "skills_tree" as any, JSON.stringify(skills));
+};
+
+export const saveLoopWorkoutConfig = async (uid: string, config: LoopWorkoutConfig) => {
+  return await updateUserData(uid, "loop_workout_config" as any, JSON.stringify(config));
 };
 
 export const addLinkToUser_nofap = async (

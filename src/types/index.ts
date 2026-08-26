@@ -65,6 +65,21 @@ export interface SkillAchievement {
 //   money_history?: string; // сериализованный JSON массив MoneyHistoryItem[]
 //   money_goals?: string;   // сериализованный JSON массив MoneyGoal[]
 // }
+
+export interface WorkoutExerciseItem {
+  id: string;
+  name: string;
+  workSec: number;
+  restSec: number;
+}
+
+export interface LoopWorkoutConfig {
+  roundsCount: number;
+  restBetweenRoundsSec: number;
+  prepareSec: number;
+  exercises: WorkoutExerciseItem[];
+  musicUrl?: string;
+}
 export interface UserDocument {
   displayName: string | null;
   email: string | null;
@@ -79,6 +94,7 @@ export interface UserDocument {
   skills_tree?: string;    // JSON строка SkillAchievement[]
   body_metrics?: BodyMetric[];
   user_avatar_url?: string; // Ссылка на аватар персонажа
+  loop_workout_config?: string; // JSON строка LoopWorkoutConfig
 }
 
 export interface BodyMetric {

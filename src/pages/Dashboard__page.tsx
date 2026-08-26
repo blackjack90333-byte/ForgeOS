@@ -37,7 +37,6 @@ const DashboardPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [now, setNow] = useState<number>(Date.now());
 
-  // Состояние аватара
   const [avatarUrl, setAvatarUrl] = useState<string>(DEFAULT_AVATAR);
   const [isEditingAvatar, setIsEditingAvatar] = useState<boolean>(false);
   const [newAvatarInput, setNewAvatarInput] = useState<string>("");
@@ -128,7 +127,6 @@ const DashboardPage: React.FC = () => {
     }
   }
 
-  // Расчет уровня и опыта
   const characterLvl = Math.max(1, Math.floor(nofapDays / 7) + Math.floor(skillsCount / 2) + 1);
   const currentExp = (nofapDays * 500) + (skillsCount * 1200) + (moneySum > 0 ? 3000 : 0);
   const maxExp = characterLvl * 6000;
@@ -183,7 +181,6 @@ const DashboardPage: React.FC = () => {
           transform: translateY(1px) translateX(0);
         }
 
-        /* Сочные фоны и границы для разных типов кнопок */
         .btn_nofap {
           background: linear-gradient(90deg, rgba(0, 255, 21, 0.08) 0%, rgba(0, 255, 21, 0.02) 100%);
           border: 1px solid rgba(0, 255, 21, 0.25);
@@ -334,7 +331,7 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* 2. ДОФАМИН & ВОЛЯ */}
+          {/* КОНТРОЛЬ ДОФАМИНА & ВОЛИ */}
           <div style={{ marginBottom: "14px" }}>
             <div className="gothic_section_header" style={{ color: "#00ff15" }}>КОНТРОЛЬ ДОФАМИНА & ВОЛИ</div>
             <div className="gothic_skill_row btn_nofap" onClick={() => navigate("/nofap_page")}>
@@ -346,9 +343,10 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* 3. ТЕЛО */}
+          {/* УПРАВЛЕНИЕ ТЕЛОМ */}
           <div style={{ marginBottom: "14px" }}>
             <div className="gothic_section_header" style={{ color: "#3498db" }}>УПРАВЛЕНИЕ ТЕЛОМ</div>
+            
             <div className="gothic_skill_row btn_body" onClick={() => navigate("/body_page")}>
               <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <span style={{ color: "#3498db" }}>⚔️</span>
@@ -358,9 +356,17 @@ const DashboardPage: React.FC = () => {
                 {bodyStatus ? bodyStatus.title : "Замеры"}
               </span>
             </div>
+
+            <div className="gothic_skill_row btn_body" onClick={() => navigate("/loop_workout_page")}>
+              <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ color: "#3498db" }}>⏱️</span>
+                <span>Loop Тренировка (Таймер)</span>
+              </span>
+              <span style={{ color: "#3498db", fontSize: "12px", fontWeight: "bold" }}>Конструктор</span>
+            </div>
           </div>
 
-          {/* 4. ФИНАНСЫ */}
+          {/* ФИНАНСОВЫЙ КОНТРОЛЬ */}
           <div style={{ marginBottom: "14px" }}>
             <div className="gothic_section_header" style={{ color: "#f1c40f" }}>ФИНАНСОВЫЙ КОНТРОЛЬ</div>
             <div className="gothic_skill_row btn_money" onClick={() => navigate("/countmoney_page")}>
@@ -374,7 +380,7 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* ГРУППЫ НАВЫКОВ (1. САМООРГАНИЗАЦИЯ) */}
+          {/* САМООРГАНИЗАЦИЯ & ПРОДУКТИВНОСТЬ */}
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <div>
               <div className="gothic_section_header" style={{ color: "#f0932b" }}>САМООРГАНИЗАЦИЯ & ПРОДУКТИВНОСТЬ</div>
@@ -419,7 +425,6 @@ const DashboardPage: React.FC = () => {
             top: "20px",
           }}
         >
-          {/* Контейнер фотки персонажа */}
           <div
             className="gothic_panel"
             style={{

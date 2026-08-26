@@ -14,6 +14,7 @@ import TodoListPage from "../pages/TodoList__page";
 import QuestPage from "../pages/Quest__page";
 import SkillsPage from "../pages/Skills__page";
 import BackgroundAudioPlayer from "../components/BackgroundAudioPlayer";
+import LoopWorkoutPage from "../pages/LoopWorkout__page";
 
 export interface AppRouteItem {
   path: string;
@@ -140,6 +141,13 @@ const routeConfig: AppRouteItem[] = [
     isPrivate: true,
     isVisibleWhenLoggined: true,
     label: "Мои скиллы и ачивки",
+  },
+  {
+    path: "/loop_workout_page",
+    element: <LoopWorkoutPage />,
+    isPrivate: true,
+    isVisibleWhenLoggined: true,
+    label: "Loop Тренировка (Таймер)",
   },
 ];
 
