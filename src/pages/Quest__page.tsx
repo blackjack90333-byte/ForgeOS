@@ -227,7 +227,7 @@ const QuestPage: React.FC = () => {
   return (
     <div style={{ padding: "16px 20px", fontFamily: "Arial, sans-serif", maxWidth: "900px", margin: "0 auto" }}>
       {/* Верхняя шапка */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "1px solid #222", paddingBottom: "15px" }}>
+      {/* <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "1px solid #222", paddingBottom: "15px" }}>
         <div>
           <h1 style={{ margin: 0, fontSize: "24px", letterSpacing: "1px" }}>
             FORGE<span style={{ color: "#00ff15" }}>OS</span> // КВЕСТЫ
@@ -251,7 +251,7 @@ const QuestPage: React.FC = () => {
         >
           ← В Дашборд
         </Link>
-      </div>
+      </div> */}
 
       {/* Внешний портал базы квестов */}
       <div

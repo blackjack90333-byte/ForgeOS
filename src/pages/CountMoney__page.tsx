@@ -337,9 +337,9 @@ const CountMoneyPage: React.FC = () => {
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "950px", margin: "0 auto" }}>
       <div className="countMoney_container">
         <div>
-          <h1 style={{ marginBottom: "20px" }}>
+          {/* <h1 style={{ marginBottom: "20px" }}>
             FORGE<span style={{ color: "#00ff15" }}>OS</span> // КАПИТАЛ
-          </h1>
+          </h1> */}
 
           {/* Форма ввода баланса */}
           <div

@@ -273,7 +273,7 @@ const TodoListPage: React.FC = () => {
       `}</style>
 
       {/* Навигация */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", borderBottom: "1px solid #222", paddingBottom: "8px" }}>
+      {/* <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", borderBottom: "1px solid #222", paddingBottom: "8px" }}>
         <h1 style={{ margin: 0, fontSize: "18px", letterSpacing: "1px" }}>
           FORGE<span style={{ color: "#00ff15" }}>OS</span> // МАТРИЦА
         </h1>
@@ -292,7 +292,7 @@ const TodoListPage: React.FC = () => {
         >
           ← Дашборд
         </Link>
-      </div>
+      </div> */}
 
       <div className="todo_layout">
         {/* Компактный буфер входящих */}
