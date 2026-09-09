@@ -23,6 +23,7 @@ const RoutineDropStack: React.FC<RoutineDropStackProps> = ({
 }) => {
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isDragOverArea, setIsDragOverArea] = useState<boolean>(false);
+  const [draggingStackIndex, setDraggingStackIndex] = useState<number | null>(null);
 
   // Сбор всех уникальных бенефитов из выбранных на сегодня блоков
   const allSelectedBenefits = selectedBlockIds.reduce<string[]>((acc, blockId) => {
@@ -43,23 +44,61 @@ const RoutineDropStack: React.FC<RoutineDropStackProps> = ({
     e.dataTransfer.dropEffect = "move";
   };
 
-  const handleDropOnItem = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const blockId = e.dataTransfer.getData("text/plain");
-    if (blockId) {
-      onDropBlock(blockId, index);
-    }
+  // Начало перетаскивания карточки внутри стека
+  const handleItemDragStart = (e: React.DragEvent, index: number, blockId: string) => {
+    setDraggingStackIndex(index);
+    e.dataTransfer.setData("text/plain", blockId);
+    e.dataTransfer.setData("application/x-routine-reorder-index", String(index));
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleItemDragEnd = () => {
+    setDraggingStackIndex(null);
     setDragOverIndex(null);
     setIsDragOverArea(false);
   };
 
+  // Дроп на конкретную позицию
+  const handleDropOnItem = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const fromIndexStr = e.dataTransfer.getData("application/x-routine-reorder-index");
+    const blockId = e.dataTransfer.getData("text/plain");
+
+    if (blockId) {
+      if (fromIndexStr !== "") {
+        // Пересортировка внутри стека: удаляем со старой позиции и вставляем на новую
+        const fromIndex = parseInt(fromIndexStr, 10);
+        if (!isNaN(fromIndex) && fromIndex !== targetIndex) {
+          onDropBlock(blockId, targetIndex);
+        }
+      } else {
+        // Добавление нового блока из каталога
+        onDropBlock(blockId, targetIndex);
+      }
+    }
+
+    setDraggingStackIndex(null);
+    setDragOverIndex(null);
+    setIsDragOverArea(false);
+  };
+
+  // Дроп в пустую нижнюю область контейнера
   const handleDropOnEnd = (e: React.DragEvent) => {
     e.preventDefault();
+    const fromIndexStr = e.dataTransfer.getData("application/x-routine-reorder-index");
     const blockId = e.dataTransfer.getData("text/plain");
+
     if (blockId) {
-      onDropBlock(blockId);
+      if (fromIndexStr !== "") {
+        onDropBlock(blockId, selectedBlockIds.length - 1);
+      } else {
+        onDropBlock(blockId);
+      }
     }
+
+    setDraggingStackIndex(null);
     setDragOverIndex(null);
     setIsDragOverArea(false);
   };
@@ -169,7 +208,7 @@ const RoutineDropStack: React.FC<RoutineDropStackProps> = ({
         ▶ НАЧАТЬ ВЫПОЛНЕНИЕ ({totalStepsCount} ЗАДАЧ)
       </button>
 
-      {/* Список блоков в стеке с зонами вставки */}
+      {/* Список блоков в стеке с перетаскиванием между собой */}
       <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
         {selectedBlockIds.length === 0 ? (
           <div
@@ -190,15 +229,17 @@ const RoutineDropStack: React.FC<RoutineDropStackProps> = ({
             const block = blocksLibrary.find((b) => b.id === blockId);
             if (!block) return null;
 
+            const isCurrentDragging = draggingStackIndex === index;
+
             return (
               <React.Fragment key={`${blockId}_${index}`}>
                 {/* Индикатор вставки при наведении */}
                 {dragOverIndex === index && (
                   <div
                     style={{
-                      height: "3px",
+                      height: "4px",
                       backgroundColor: "#00ff15",
-                      boxShadow: "0 0 8px #00ff15",
+                      boxShadow: "0 0 10px #00ff15",
                       borderRadius: "2px",
                       margin: "2px 0",
                     }}
@@ -206,6 +247,9 @@ const RoutineDropStack: React.FC<RoutineDropStackProps> = ({
                 )}
 
                 <div
+                  draggable
+                  onDragStart={(e) => handleItemDragStart(e, index, block.id)}
+                  onDragEnd={handleItemDragEnd}
                   onDragOver={(e) => {
                     handleDragOver(e);
                     setDragOverIndex(index);
@@ -213,18 +257,33 @@ const RoutineDropStack: React.FC<RoutineDropStackProps> = ({
                   onDragLeave={() => setDragOverIndex(null)}
                   onDrop={(e) => handleDropOnItem(e, index)}
                   style={{
-                    backgroundColor: "#11141c",
-                    border: "1px solid #1f2533",
+                    backgroundColor: isCurrentDragging ? "#18201a" : "#11141c",
+                    border: isCurrentDragging ? "1px dashed #00ff15" : "1px solid #1f2533",
                     borderLeft: "3px solid #00ff15",
+                    opacity: isCurrentDragging ? 0.4 : 1,
                     padding: "8px 10px",
                     borderRadius: "4px",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                     gap: "8px",
+                    cursor: "grab",
+                    transition: "background-color 0.15s ease, opacity 0.15s ease",
+                    userSelect: "none",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span
+                      style={{
+                        color: "#444",
+                        fontSize: "16px",
+                        cursor: "grab",
+                        lineHeight: 1,
+                      }}
+                      title="Потяни для перемещения"
+                    >
+                      ⠿
+                    </span>
                     <span style={{ color: "#00ff15", fontWeight: "bold", fontSize: "14px" }}>
                       #{index + 1}
                     </span>
@@ -238,7 +297,10 @@ const RoutineDropStack: React.FC<RoutineDropStackProps> = ({
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
                       disabled={index === 0}
                       onClick={() => onMoveBlock(index, "up")}
