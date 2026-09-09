@@ -356,7 +356,7 @@ const CountMoneyPage: React.FC = () => {
             }}
           >
             <div>
-              <label style={{ display: "block", fontSize: "12px", color: "#888", marginBottom: "4px" }}>
+              <label style={{ display: "block", fontSize: "14px", color: "#888", marginBottom: "4px" }}>
                 Сумма баланса (₽):
               </label>
               <input
@@ -376,7 +376,7 @@ const CountMoneyPage: React.FC = () => {
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "12px", color: "#888", marginBottom: "4px" }}>
+              <label style={{ display: "block", fontSize: "14px", color: "#888", marginBottom: "4px" }}>
                 Делитель блока (₽):
               </label>
               <input
@@ -410,7 +410,7 @@ const CountMoneyPage: React.FC = () => {
             <div style={{ fontSize: "18px", color: "#ddd", marginBottom: "4px" }}>
               Текущий капитал: <strong style={{ color: "#00ff15", fontSize: "24px" }}>{displayedMoney.toLocaleString("ru-RU")}</strong> ₽
             </div>
-            <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>
+            <p style={{ color: "#888", fontSize: "14px", margin: 0 }}>
               До следующего блока в {moneyDivider.toLocaleString("ru-RU")} ₽ осталось заработать:{" "}
               <strong style={{ color: "#00ff15" }}>{remainderToNext.toLocaleString("ru-RU")} ₽</strong>
             </p>
@@ -451,7 +451,7 @@ const CountMoneyPage: React.FC = () => {
                   color: "#00ff15",
                   padding: "6px 12px",
                   borderRadius: "4px",
-                  fontSize: "12px",
+                  fontSize: "14px",
                   fontWeight: "bold",
                   cursor: "pointer",
                 }}
@@ -502,7 +502,7 @@ const CountMoneyPage: React.FC = () => {
               </ActionButton>
               <button
                 onClick={() => setAddNewGoalVisible(false)}
-                style={{ backgroundColor: "transparent", border: "none", color: "#888", cursor: "pointer", fontSize: "13px" }}
+                style={{ backgroundColor: "transparent", border: "none", color: "#888", cursor: "pointer", fontSize: "14px" }}
               >
                 Отмена
               </button>
@@ -533,7 +533,7 @@ const CountMoneyPage: React.FC = () => {
                         <h3 style={{ margin: 0, fontSize: "16px", color: isCompleted ? "#00ff15" : "#fff" }}>
                           {goal.name} {isCompleted && "👑"}
                         </h3>
-                        <span style={{ fontSize: "12px", color: "#888" }}>
+                        <span style={{ fontSize: "14px", color: "#888" }}>
                           ({goal.price.toLocaleString("ru-RU")} ₽)
                         </span>
                       </div>
@@ -542,7 +542,7 @@ const CountMoneyPage: React.FC = () => {
                         variant="danger"
                         loadingText="..."
                         successText="✓"
-                        style={{ padding: "3px 8px", fontSize: "12px" }}
+                        style={{ padding: "3px 8px", fontSize: "14px" }}
                       >
                         Удалить
                       </ActionButton>
@@ -570,7 +570,7 @@ const CountMoneyPage: React.FC = () => {
                       />
                     </div>
 
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#aaa" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", color: "#aaa" }}>
                       <span>Прогресс: <strong style={{ color: "#00ff15" }}>{progress.toFixed(1)}%</strong></span>
                       <span>
                         {isCompleted

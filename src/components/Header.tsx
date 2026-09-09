@@ -31,7 +31,7 @@ export const UserProfileWidget: React.FC = () => {
         <strong style={{ color: "#fff", display: "block" }}>
           {user.displayName || "Оператор"}
         </strong>
-        <span style={{ color: "#666", fontSize: "12px" }}>{user.email}</span>
+        <span style={{ color: "#666", fontSize: "14px" }}>{user.email}</span>
       </div>
     </div>
   );

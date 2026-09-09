@@ -108,7 +108,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ timestamp }) => {
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "#888", textTransform: "uppercase" }}>
+          <span style={{ fontSize: "14px", color: "#888", textTransform: "uppercase" }}>
             Текущий ранг
           </span>
           <h2 style={{ margin: "2px 0 0 0", color: currentRank.color }}>
@@ -116,7 +116,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ timestamp }) => {
           </h2>
         </div>
         <div style={{ textAlign: "right" }}>
-          <span style={{ fontSize: "12px", color: "#888" }}>Дней в строю</span>
+          <span style={{ fontSize: "14px", color: "#888" }}>Дней в строю</span>
           <h2 style={{ margin: "2px 0 0 0", color: "#00ff15" }}>{fullDays}</h2>
         </div>
       </div>
@@ -132,13 +132,13 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ timestamp }) => {
         }}
       >
         <div>
-          <span style={{ color: "#888", fontSize: "13px" }}>Дата старта:</span>
+          <span style={{ color: "#888", fontSize: "14px" }}>Дата старта:</span>
           <br />
           <strong className="light_green">{formatTimestamp(timestamp)}</strong>
         </div>
 
         <div>
-          <span style={{ color: "#888", fontSize: "13px" }}>Время без срывов:</span>
+          <span style={{ color: "#888", fontSize: "14px" }}>Время без срывов:</span>
           <br />
           <strong className="light_green">{calculateTimeDifference(timestamp, now)}</strong>
         </div>
@@ -192,10 +192,10 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ timestamp }) => {
                 }}
               >
                 <div style={{ fontSize: "24px", marginBottom: "4px" }}>{m.badge}</div>
-                <strong style={{ fontSize: "13px", display: "block", color: isUnlocked ? "#fff" : "#777" }}>
+                <strong style={{ fontSize: "14px", display: "block", color: isUnlocked ? "#fff" : "#777" }}>
                   {m.title}
                 </strong>
-                <span style={{ fontSize: "11px", color: isUnlocked ? "#00ff15" : "#555" }}>
+                <span style={{ fontSize: "14px", color: isUnlocked ? "#00ff15" : "#555" }}>
                   {m.days} {m.days === 3 ? "дня" : "дней"}
                 </span>
               </div>
@@ -415,7 +415,7 @@ const NoFapPage: React.FC = () => {
                         variant="danger"
                         loadingText="..."
                         successText="✓"
-                        style={{ padding: "4px 10px", fontSize: "12px" }}
+                        style={{ padding: "4px 10px", fontSize: "14px" }}
                       >
                         Удалить
                       </ActionButton>
@@ -520,13 +520,13 @@ const NoFapPage: React.FC = () => {
               <h2 style={{ margin: "0 0 8px 0", color: "#ff4d4d", fontSize: "19px" }}>
                 🛑 РАЗБОР СРЫВА // ПРОШИВКА ТРИГГЕРА
               </h2>
-              <p style={{ color: "#aaa", fontSize: "13px", margin: "0 0 16px 0", lineHeight: "1.4" }}>
+              <p style={{ color: "#aaa", fontSize: "14px", margin: "0 0 16px 0", lineHeight: "1.4" }}>
                 Перепиши шаблон привычки: <em>«Когда происходит [Триггер], я буду делать [Заменитель], потому что это дает мне [Награду]»</em>.
               </p>
 
               {/* 1. Триггер */}
               <div style={{ marginBottom: "12px" }}>
-                <label style={{ display: "block", color: "#ff8080", fontSize: "12px", textTransform: "uppercase", marginBottom: "4px", fontWeight: "bold" }}>
+                <label style={{ display: "block", color: "#ff8080", fontSize: "14px", textTransform: "uppercase", marginBottom: "4px", fontWeight: "bold" }}>
                   1. Триггер («Когда происходит...»)
                 </label>
                 <textarea
@@ -542,14 +542,14 @@ const NoFapPage: React.FC = () => {
                     color: "#fff",
                     padding: "8px 10px",
                     borderRadius: "6px",
-                    fontSize: "13px",
+                    fontSize: "14px",
                   }}
                 />
               </div>
 
               {/* 2. Заменитель */}
               <div style={{ marginBottom: "12px" }}>
-                <label style={{ display: "block", color: "#3498db", fontSize: "12px", textTransform: "uppercase", marginBottom: "4px", fontWeight: "bold" }}>
+                <label style={{ display: "block", color: "#3498db", fontSize: "14px", textTransform: "uppercase", marginBottom: "4px", fontWeight: "bold" }}>
                   2. Действие-заменитель («Я буду делать...»)
                 </label>
                 <input
@@ -565,14 +565,14 @@ const NoFapPage: React.FC = () => {
                     color: "#fff",
                     padding: "8px 10px",
                     borderRadius: "6px",
-                    fontSize: "13px",
+                    fontSize: "14px",
                   }}
                 />
               </div>
 
               {/* 3. Награда */}
               <div style={{ marginBottom: "12px" }}>
-                <label style={{ display: "block", color: "#f1c40f", fontSize: "12px", textTransform: "uppercase", marginBottom: "4px", fontWeight: "bold" }}>
+                <label style={{ display: "block", color: "#f1c40f", fontSize: "14px", textTransform: "uppercase", marginBottom: "4px", fontWeight: "bold" }}>
                   3. Истинная награда («Потому что это дает мне...»)
                 </label>
                 <input
@@ -588,14 +588,14 @@ const NoFapPage: React.FC = () => {
                     color: "#fff",
                     padding: "8px 10px",
                     borderRadius: "6px",
-                    fontSize: "13px",
+                    fontSize: "14px",
                   }}
                 />
               </div>
 
               {/* 4. Вывод / Урок */}
               <div style={{ marginBottom: "20px" }}>
-                <label style={{ display: "block", color: "#00ff15", fontSize: "12px", textTransform: "uppercase", marginBottom: "4px", fontWeight: "bold" }}>
+                <label style={{ display: "block", color: "#00ff15", fontSize: "14px", textTransform: "uppercase", marginBottom: "4px", fontWeight: "bold" }}>
                   4. Вывод на будущее (Орг-решение)
                 </label>
                 <textarea
@@ -611,7 +611,7 @@ const NoFapPage: React.FC = () => {
                     color: "#00ff15",
                     padding: "8px 10px",
                     borderRadius: "6px",
-                    fontSize: "13px",
+                    fontSize: "14px",
                   }}
                 />
               </div>
@@ -663,7 +663,7 @@ const NoFapPage: React.FC = () => {
                     <h2 style={{ margin: 0, fontSize: "20px", color: "#ff4d4d" }}>
                       📓 Дневник срывов &amp; Анализ триггеров
                     </h2>
-                    <span style={{ fontSize: "12px", color: "#666" }}>
+                    <span style={{ fontSize: "14px", color: "#666" }}>
                       Всего зафиксировано: {relapses.length}
                     </span>
                   </div>
@@ -701,7 +701,7 @@ const NoFapPage: React.FC = () => {
                             <span style={{ color: "#ff4d4d", fontWeight: "bold", fontSize: "14px" }}>
                               {formatTimestamp(item.timestamp)}
                             </span>
-                            <span style={{ color: "#888", fontSize: "12px", marginLeft: "10px" }}>
+                            <span style={{ color: "#888", fontSize: "14px", marginLeft: "10px" }}>
                               (Прерван стрик: <strong style={{ color: "#fff" }}>{item.durationFormatted}</strong>)
                             </span>
                           </div>
@@ -710,7 +710,7 @@ const NoFapPage: React.FC = () => {
                             variant="danger"
                             loadingText="..."
                             successText="✓"
-                            style={{ padding: "2px 8px", fontSize: "12px" }}
+                            style={{ padding: "2px 8px", fontSize: "14px" }}
                           >
                             ×
                           </ActionButton>
@@ -723,20 +723,20 @@ const NoFapPage: React.FC = () => {
 
                         {/* Заменитель (если есть) */}
                         {item.substitute && (
-                          <div style={{ fontSize: "13px", color: "#bbb", marginBottom: "4px" }}>
+                          <div style={{ fontSize: "14px", color: "#bbb", marginBottom: "4px" }}>
                             <strong style={{ color: "#3498db" }}>Заменитель:</strong> {item.substitute}
                           </div>
                         )}
 
                         {/* Награда (если есть) */}
                         {item.reward && (
-                          <div style={{ fontSize: "13px", color: "#bbb", marginBottom: "6px" }}>
+                          <div style={{ fontSize: "14px", color: "#bbb", marginBottom: "6px" }}>
                             <strong style={{ color: "#f1c40f" }}>Награда:</strong> {item.reward}
                           </div>
                         )}
 
                         {/* Вывод */}
-                        <div style={{ fontSize: "13px", color: "#aaa" }}>
+                        <div style={{ fontSize: "14px", color: "#aaa" }}>
                           <strong style={{ color: "#00ff15" }}>Вывод на будущее:</strong> {item.lesson}
                         </div>
                       </div>
@@ -781,7 +781,7 @@ const NoFapPage: React.FC = () => {
               padding: "10px 18px",
               borderRadius: "6px",
               fontWeight: "bold",
-              fontSize: "13px",
+              fontSize: "14px",
             }}
           >
             Срыв произошел (Зафиксировать в журнал)

@@ -17,6 +17,12 @@ interface NofapPanicModalProps {
 
 const DEFAULT_PANIC_STEPS: PanicStep[] = [
   {
+    id: "step_remember",
+    title: "Друг перечитай заметки свой дневник, перечитай какие плюсы минусы когда ты не получаешь сексуальной стимуляции от экрана",
+    desc: "Перечитай бро оно того не стоит, вот например Оля класная девчонка ты же не хочешь ее расстраивать",
+    durationSec: 180, // 3 мин
+  },
+  {
     id: "step_pushups",
     title: "3 ПОДХОДА ОТЖИМАНИЙ ДО ОТКАЗА",
     desc: "Упал на пол прямо сейчас. 3 плотных подхода. Кровь уходит из тазовой области в грудные мышцы и трицепс.",
@@ -197,10 +203,10 @@ export const NofapPanicModal: React.FC<NofapPanicModalProps> = ({
         {/* Верхняя панель */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #222", paddingBottom: "12px", marginBottom: "20px" }}>
           <div>
-            <span style={{ backgroundColor: "#ff4d4d", color: "#000", fontSize: "10px", fontWeight: "bold", padding: "2px 6px", borderRadius: "2px", letterSpacing: "1px" }}>
+            <span style={{ backgroundColor: "#ff4d4d", color: "#000", fontSize: "14px", fontWeight: "bold", padding: "2px 6px", borderRadius: "2px", letterSpacing: "1px" }}>
               ПРОТОКОЛ ПЕРЕХВАТА
             </span>
-            <div style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}>
+            <div style={{ fontSize: "14px", color: "#888", marginTop: "4px" }}>
               ЭТАП {currentStepIndex + 1} ИЗ {customSteps.length}
             </div>
           </div>
@@ -212,7 +218,7 @@ export const NofapPanicModal: React.FC<NofapPanicModalProps> = ({
               color: "#888",
               padding: "4px 8px",
               cursor: "pointer",
-              fontSize: "12px",
+              fontSize: "14px",
               borderRadius: "4px",
             }}
           >
@@ -227,7 +233,7 @@ export const NofapPanicModal: React.FC<NofapPanicModalProps> = ({
               <div style={{ fontSize: "15px", fontWeight: "bold", color: "#ff4d4d", letterSpacing: "1px", marginBottom: "6px" }}>
                 &gt; {currentStep.title}
               </div>
-              <div style={{ fontSize: "12px", color: "#aaa", lineHeight: "1.5", backgroundColor: "#111", padding: "10px 12px", borderRadius: "4px", border: "1px solid #222" }}>
+              <div style={{ fontSize: "14px", color: "#aaa", lineHeight: "1.5", backgroundColor: "#111", padding: "10px 12px", borderRadius: "4px", border: "1px solid #222" }}>
                 {currentStep.desc}
               </div>
             </div>
@@ -237,7 +243,7 @@ export const NofapPanicModal: React.FC<NofapPanicModalProps> = ({
               <div style={{ fontSize: "52px", fontWeight: "bold", color: timeLeft <= 5 ? "#ff4d4d" : "#00ff15", letterSpacing: "2px" }}>
                 {formatSeconds(timeLeft)}
               </div>
-              <div style={{ fontSize: "11px", color: "#666", marginTop: "4px" }}>
+              <div style={{ fontSize: "14px", color: "#666", marginTop: "4px" }}>
                 ОСТАЛОСЬ ВРЕМЕНИ НА ЭТАП
               </div>
             </div>
@@ -265,7 +271,7 @@ export const NofapPanicModal: React.FC<NofapPanicModalProps> = ({
                   border: "1px solid #333",
                   borderRadius: "4px",
                   fontWeight: "bold",
-                  fontSize: "12px",
+                  fontSize: "14px",
                   cursor: "pointer",
                 }}
               >
@@ -280,7 +286,7 @@ export const NofapPanicModal: React.FC<NofapPanicModalProps> = ({
                   color: "#aaa",
                   border: "1px solid #333",
                   borderRadius: "4px",
-                  fontSize: "12px",
+                  fontSize: "14px",
                   cursor: "pointer",
                 }}
               >
@@ -295,7 +301,7 @@ export const NofapPanicModal: React.FC<NofapPanicModalProps> = ({
                   color: "#aaa",
                   border: "1px solid #333",
                   borderRadius: "4px",
-                  fontSize: "12px",
+                  fontSize: "14px",
                   cursor: "pointer",
                 }}
               >
@@ -309,13 +315,13 @@ export const NofapPanicModal: React.FC<NofapPanicModalProps> = ({
             <div style={{ fontSize: "20px", fontWeight: "bold", color: "#00ff15", letterSpacing: "1px", marginBottom: "8px" }}>
               ПРОТОКОЛ ВЫПОЛНЕН // ИМПУЛЬС ПОДАВЛЕН
             </div>
-            <p style={{ color: "#aaa", fontSize: "13px", lineHeight: "1.5", marginBottom: "24px" }}>
+            <p style={{ color: "#aaa", fontSize: "14px", lineHeight: "1.5", marginBottom: "24px" }}>
               Дофаминовый шторм сбит физической нагрузкой. Кровь перераспределена, контроль сохранен. Возвращайся к текущим задачам.
             </p>
             <ActionButton
               onClick={handleCloseModal}
               variant="primary"
-              style={{ padding: "12px 24px", fontSize: "13px" }}
+              style={{ padding: "12px 24px", fontSize: "14px" }}
             >
               ВЕРНУТЬСЯ В СТРОЙ
             </ActionButton>

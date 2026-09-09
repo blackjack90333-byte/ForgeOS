@@ -277,7 +277,7 @@ const LoopWorkoutPage: React.FC = () => {
                 textDecoration: "none",
                 padding: "6px 12px",
                 borderRadius: "4px",
-                fontSize: "13px",
+                fontSize: "14px",
                 fontWeight: "bold",
               }}
             >
@@ -291,7 +291,7 @@ const LoopWorkoutPage: React.FC = () => {
                 color: "#ff4d4d",
                 padding: "6px 12px",
                 borderRadius: "4px",
-                fontSize: "13px",
+                fontSize: "14px",
                 fontWeight: "bold",
                 cursor: "pointer",
                 fontFamily: "monospace",
@@ -422,7 +422,7 @@ const LoopWorkoutPage: React.FC = () => {
               textDecoration: "none",
               padding: "5px 10px",
               borderRadius: "4px",
-              fontSize: "12px",
+              fontSize: "14px",
               fontWeight: "bold",
             }}
           >
@@ -436,7 +436,7 @@ const LoopWorkoutPage: React.FC = () => {
               color: "#888",
               padding: "5px 8px",
               borderRadius: "4px",
-              fontSize: "12px",
+              fontSize: "14px",
               cursor: "pointer",
             }}
           >
@@ -454,11 +454,11 @@ const LoopWorkoutPage: React.FC = () => {
               placeholder="YouTube URL..."
               value={musicInput}
               onChange={(e) => setMusicInput(e.target.value)}
-              style={{ flex: 1, backgroundColor: "#161616", border: "1px solid #333", color: "#fff", padding: "6px 10px", borderRadius: "4px", fontFamily: "monospace", fontSize: "13px" }}
+              style={{ flex: 1, backgroundColor: "#161616", border: "1px solid #333", color: "#fff", padding: "6px 10px", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px" }}
             />
             <button
               onClick={handleSaveMusicUrl}
-              style={{ backgroundColor: "#f0932b", color: "#000", border: "none", padding: "6px 14px", fontWeight: "bold", fontSize: "12px", cursor: "pointer", borderRadius: "4px" }}
+              style={{ backgroundColor: "#f0932b", color: "#000", border: "none", padding: "6px 14px", fontWeight: "bold", fontSize: "14px", cursor: "pointer", borderRadius: "4px" }}
             >
               OK
             </button>
@@ -482,7 +482,7 @@ const LoopWorkoutPage: React.FC = () => {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-              <span style={{ fontSize: "12px", color: "#888", fontWeight: "bold" }}>КРУГОВ:</span>
+              <span style={{ fontSize: "14px", color: "#888", fontWeight: "bold" }}>КРУГОВ:</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -501,7 +501,7 @@ const LoopWorkoutPage: React.FC = () => {
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-              <span style={{ fontSize: "12px", color: "#888", fontWeight: "bold" }}>ОТДЫХ:</span>
+              <span style={{ fontSize: "14px", color: "#888", fontWeight: "bold" }}>ОТДЫХ:</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -516,11 +516,11 @@ const LoopWorkoutPage: React.FC = () => {
                 }
                 style={{ width: "48px", padding: "4px", backgroundColor: "#141414", border: "1px solid #333", color: "#3498db", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px", textAlign: "center" }}
               />
-              <span style={{ fontSize: "11px", color: "#666" }}>сек</span>
+              <span style={{ fontSize: "14px", color: "#666" }}>сек</span>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-              <span style={{ fontSize: "12px", color: "#888", fontWeight: "bold" }}>СТАРТ:</span>
+              <span style={{ fontSize: "14px", color: "#888", fontWeight: "bold" }}>СТАРТ:</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -535,7 +535,7 @@ const LoopWorkoutPage: React.FC = () => {
                 }
                 style={{ width: "48px", padding: "4px", backgroundColor: "#141414", border: "1px solid #333", color: "#f0932b", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px", textAlign: "center" }}
               />
-              <span style={{ fontSize: "11px", color: "#666" }}>сек</span>
+              <span style={{ fontSize: "14px", color: "#666" }}>сек</span>
             </div>
           </div>
 
@@ -549,7 +549,7 @@ const LoopWorkoutPage: React.FC = () => {
                 color: "#00ff15",
                 padding: "8px",
                 borderRadius: "4px",
-                fontSize: "13px",
+                fontSize: "14px",
                 cursor: "pointer",
                 fontWeight: "bold",
                 fontFamily: "monospace",
@@ -587,7 +587,7 @@ const LoopWorkoutPage: React.FC = () => {
             alignItems: "center",
             gap: "6px",
             padding: "4px 8px",
-            fontSize: "11px",
+            fontSize: "14px",
             color: "#666",
             fontWeight: "bold",
           }}
@@ -615,7 +615,7 @@ const LoopWorkoutPage: React.FC = () => {
                 gap: "6px",
               }}
             >
-              <span style={{ fontSize: "13px", color: "#555", fontWeight: "bold" }}>
+              <span style={{ fontSize: "14px", color: "#555", fontWeight: "bold" }}>
                 {index + 1}
               </span>
 

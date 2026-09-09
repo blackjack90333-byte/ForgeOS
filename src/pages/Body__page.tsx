@@ -296,7 +296,7 @@ const BodyPage: React.FC = () => {
             color: "#00ff15",
             padding: "6px 12px",
             borderRadius: "4px",
-            fontSize: "12px",
+            fontSize: "14px",
             fontWeight: "bold",
             cursor: "pointer",
           }}
@@ -318,7 +318,7 @@ const BodyPage: React.FC = () => {
           color: "#e0e0e0",
         }}
       >
-        <div style={{ fontSize: "12px", fontWeight: "bold", color: "#00ff15", letterSpacing: "1px" }}>
+        <div style={{ fontSize: "14px", fontWeight: "bold", color: "#00ff15", letterSpacing: "1px" }}>
           ⚡ СУПЕР-ФОРМУЛА СКУФОМЕТРА [LBM + FFMI + CALIPER]
         </div>
         <p style={{ margin: "6px 0 0 0", fontSize: "14px", lineHeight: "1.5" }}>
@@ -342,13 +342,13 @@ const BodyPage: React.FC = () => {
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "#aaa", textTransform: "uppercase", letterSpacing: "1px" }}>
+          <span style={{ fontSize: "14px", color: "#aaa", textTransform: "uppercase", letterSpacing: "1px" }}>
             Текущий статус формы
           </span>
           <h2 style={{ margin: "4px 0 8px 0", color: status.color, fontSize: "24px" }}>
             {status.badge} {status.title}
           </h2>
-          <div style={{ fontSize: "13px", color: "#ddd", display: "flex", flexWrap: "wrap", gap: "15px" }}>
+          <div style={{ fontSize: "14px", color: "#ddd", display: "flex", flexWrap: "wrap", gap: "15px" }}>
             <span>Рост: <strong style={{ color: "#fff" }}>{currentHeight} см</strong></span>
             <span>Вес: <strong style={{ color: "#fff" }}>{currentWeight} кг</strong></span>
             <span>Складка: <strong style={{ color: "#fff" }}>{currentCaliper} мм</strong></span>
@@ -358,7 +358,7 @@ const BodyPage: React.FC = () => {
         </div>
 
         <div style={{ textAlign: "right" }}>
-          <span style={{ fontSize: "12px", color: "#aaa" }}>Скуфометр</span>
+          <span style={{ fontSize: "14px", color: "#aaa" }}>Скуфометр</span>
           <h1 style={{ margin: "2px 0 0 0", color: status.color, fontSize: "38px" }}>
             {currentCalc.index}%
           </h1>
@@ -386,7 +386,7 @@ const BodyPage: React.FC = () => {
         <h3 style={{ margin: "0 0 15px 0", fontSize: "16px" }}>Зафиксировать замер</h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px" }}>
           <div>
-            <label style={{ fontSize: "12px", color: "#888", display: "block", marginBottom: "4px" }}>Дата</label>
+            <label style={{ fontSize: "14px", color: "#888", display: "block", marginBottom: "4px" }}>Дата</label>
             <input
               type="date"
               value={date}
@@ -397,7 +397,7 @@ const BodyPage: React.FC = () => {
           </div>
 
           <div>
-            <label style={{ fontSize: "12px", color: "#888", display: "block", marginBottom: "4px" }}>
+            <label style={{ fontSize: "14px", color: "#888", display: "block", marginBottom: "4px" }}>
               Рост (см) *
             </label>
             <input
@@ -412,7 +412,7 @@ const BodyPage: React.FC = () => {
           </div>
 
           <div>
-            <label style={{ fontSize: "12px", color: "#888", display: "block", marginBottom: "4px" }}>
+            <label style={{ fontSize: "14px", color: "#888", display: "block", marginBottom: "4px" }}>
               Вес (кг) *
             </label>
             <input
@@ -427,7 +427,7 @@ const BodyPage: React.FC = () => {
           </div>
 
           <div>
-            <label style={{ fontSize: "12px", color: "#888", display: "block", marginBottom: "4px" }}>
+            <label style={{ fontSize: "14px", color: "#888", display: "block", marginBottom: "4px" }}>
               Складка калипера (мм)
             </label>
             <input
@@ -441,7 +441,7 @@ const BodyPage: React.FC = () => {
           </div>
 
           <div>
-            <label style={{ fontSize: "12px", color: "#888", display: "block", marginBottom: "4px" }}>
+            <label style={{ fontSize: "14px", color: "#888", display: "block", marginBottom: "4px" }}>
               Заметка / Тренировка
             </label>
             <input
@@ -500,17 +500,17 @@ const BodyPage: React.FC = () => {
                       <span style={{ color: "#f1c40f", marginRight: "12px" }}>{m.caliper} мм ({calc.fatPercent}%)</span>
                     )}
                     <span style={{ color: "#3498db", marginRight: "12px" }}>Мышцы: {calc.lbm} кг</span>
-                    <span style={{ color: itemStatus.color, fontSize: "13px", marginRight: "12px" }}>
+                    <span style={{ color: itemStatus.color, fontSize: "14px", marginRight: "12px" }}>
                       [{calc.index}% {itemStatus.title}]
                     </span>
-                    {m.note && <span style={{ color: "#888", fontSize: "13px" }}>({m.note})</span>}
+                    {m.note && <span style={{ color: "#888", fontSize: "14px" }}>({m.note})</span>}
                   </div>
                   <ActionButton
                     onClick={() => handleDeleteMetric(m)}
                     variant="danger"
                     loadingText="Удаление..."
                     successText="✓ Удалено"
-                    style={{ padding: "4px 8px", fontSize: "12px" }}
+                    style={{ padding: "4px 8px", fontSize: "14px" }}
                   >
                     Удалить
                   </ActionButton>

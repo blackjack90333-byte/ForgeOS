@@ -306,7 +306,7 @@ const TodoListPage: React.FC = () => {
             padding: "10px",
           }}
         >
-          <div style={{ fontSize: "11px", fontWeight: "bold", color: "#00ff15", marginBottom: "8px", letterSpacing: "1px" }}>
+          <div style={{ fontSize: "14px", fontWeight: "bold", color: "#00ff15", marginBottom: "8px", letterSpacing: "1px" }}>
             📥 БУФЕР ({inboxTasks.length})
           </div>
 
@@ -350,7 +350,7 @@ const TodoListPage: React.FC = () => {
                   border: "1px solid #2a2a2a",
                   borderRadius: "4px",
                   padding: "6px 8px",
-                  fontSize: "12px",
+                  fontSize: "14px",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px", marginBottom: "4px" }}>
@@ -364,7 +364,7 @@ const TodoListPage: React.FC = () => {
                     successText="✓"
                     style={{
                       padding: "0px 4px",
-                      fontSize: "11px",
+                      fontSize: "14px",
                       lineHeight: "14px",
                       alignSelf: "flex-start",
                       flexShrink: 0,
@@ -381,7 +381,7 @@ const TodoListPage: React.FC = () => {
                     variant="secondary"
                     loadingText="..."
                     successText="✓"
-                    style={{ backgroundColor: "#221111", border: "1px solid #ff4d4d", color: "#ff4d4d", fontSize: "9px", padding: "1px 4px" }}
+                    style={{ backgroundColor: "#221111", border: "1px solid #ff4d4d", color: "#ff4d4d", fontSize: "14px", padding: "1px 4px" }}
                   >
                     Q1
                   </ActionButton>
@@ -390,7 +390,7 @@ const TodoListPage: React.FC = () => {
                     variant="secondary"
                     loadingText="..."
                     successText="✓"
-                    style={{ backgroundColor: "#111b24", border: "1px solid #3498db", color: "#3498db", fontSize: "9px", padding: "1px 4px" }}
+                    style={{ backgroundColor: "#111b24", border: "1px solid #3498db", color: "#3498db", fontSize: "14px", padding: "1px 4px" }}
                   >
                     Q2
                   </ActionButton>
@@ -399,7 +399,7 @@ const TodoListPage: React.FC = () => {
                     variant="secondary"
                     loadingText="..."
                     successText="✓"
-                    style={{ backgroundColor: "#242011", border: "1px solid #f1c40f", color: "#f1c40f", fontSize: "9px", padding: "1px 4px" }}
+                    style={{ backgroundColor: "#242011", border: "1px solid #f1c40f", color: "#f1c40f", fontSize: "14px", padding: "1px 4px" }}
                   >
                     Q3
                   </ActionButton>
@@ -408,7 +408,7 @@ const TodoListPage: React.FC = () => {
                     variant="secondary"
                     loadingText="..."
                     successText="✓"
-                    style={{ backgroundColor: "#181818", border: "1px solid #666", color: "#888", fontSize: "9px", padding: "1px 4px" }}
+                    style={{ backgroundColor: "#181818", border: "1px solid #666", color: "#888", fontSize: "14px", padding: "1px 4px" }}
                   >
                     Q4
                   </ActionButton>
@@ -437,12 +437,12 @@ const TodoListPage: React.FC = () => {
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2px" }}>
-                  <div style={{ fontSize: "12px", fontWeight: "bold", color: quadrant.borderColor }}>
+                  <div style={{ fontSize: "14px", fontWeight: "bold", color: quadrant.borderColor }}>
                     [{quadrant.tag}] {quadrant.title}
                   </div>
-                  <span style={{ fontSize: "11px", color: "#666" }}>{quadrantTasks.length}</span>
+                  <span style={{ fontSize: "14px", color: "#666" }}>{quadrantTasks.length}</span>
                 </div>
-                <div style={{ fontSize: "10px", color: "#777", marginBottom: "6px" }}>{quadrant.subtitle}</div>
+                <div style={{ fontSize: "14px", color: "#777", marginBottom: "6px" }}>{quadrant.subtitle}</div>
 
                 {renderProgressBar(quadrantTasks)}
 
@@ -464,7 +464,7 @@ const TodoListPage: React.FC = () => {
                           flexDirection: "column",
                         }}
                       >
-                        <div style={{ fontSize: "10px", color: "#888", textAlign: "center", borderBottom: "1px solid #1c1c1c", paddingBottom: "3px", marginBottom: "6px" }}>
+                        <div style={{ fontSize: "14px", color: "#888", textAlign: "center", borderBottom: "1px solid #1c1c1c", paddingBottom: "3px", marginBottom: "6px" }}>
                           {col.label} ({colTasks.length})
                         </div>
 
@@ -479,7 +479,7 @@ const TodoListPage: React.FC = () => {
                                 border: `1px solid ${col.id === "done" ? "#00ff1555" : "#333"}`,
                                 borderRadius: "4px",
                                 padding: "6px 8px",
-                                fontSize: "12px",
+                                fontSize: "14px",
                               }}
                             >
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px" }}>
@@ -501,7 +501,7 @@ const TodoListPage: React.FC = () => {
                                   successText="✓"
                                   style={{
                                     padding: "0px 4px",
-                                    fontSize: "11px",
+                                    fontSize: "14px",
                                     lineHeight: "14px",
                                     alignSelf: "flex-start",
                                     flexShrink: 0,
@@ -519,7 +519,7 @@ const TodoListPage: React.FC = () => {
                                     variant="secondary"
                                     loadingText="..."
                                     successText="✓"
-                                    style={{ background: "#222", color: "#aaa", fontSize: "9px", padding: "2px 4px" }}
+                                    style={{ background: "#222", color: "#aaa", fontSize: "14px", padding: "2px 4px" }}
                                   >
                                     ← Сделать
                                   </ActionButton>
@@ -530,7 +530,7 @@ const TodoListPage: React.FC = () => {
                                     variant="secondary"
                                     loadingText="..."
                                     successText="✓"
-                                    style={{ background: "#113317", color: "#32d64a", fontSize: "9px", padding: "2px 4px" }}
+                                    style={{ background: "#113317", color: "#32d64a", fontSize: "14px", padding: "2px 4px" }}
                                   >
                                     ⚙ В работе
                                   </ActionButton>
@@ -540,7 +540,7 @@ const TodoListPage: React.FC = () => {
                                     onClick={() => moveTaskDirect(t.id, quadrant.id, "done")}
                                     loadingText="..."
                                     successText="✓"
-                                    style={{ fontSize: "9px", padding: "2px 4px" }}
+                                    style={{ fontSize: "14px", padding: "2px 4px" }}
                                   >
                                     ✓ Готово
                                   </ActionButton>

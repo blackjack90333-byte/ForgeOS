@@ -155,4 +155,22 @@ export const setUserHeight = async (userId: string, height: number) => {
   });
 };
 
+// В самый конец файла src/services/firebase.ts:
+if (typeof window !== "undefined") {
+  (window as any).downloadMyBackup = async () => {
+    const currentUid = auth.currentUser?.uid || "gSWTVEJIoUM6Q7ht7wanZM9nGi52";
+    const data = await getUserData(currentUid);
+    if (!data) return console.error("Нет данных для выгрузки");
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `backup_${currentUid}_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    console.log("✓ Бэкап скачан через нативный SDK!");
+  };
+}
+
 export { auth, provider, signInWithPopup, db, signOut };

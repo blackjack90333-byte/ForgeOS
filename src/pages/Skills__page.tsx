@@ -245,7 +245,7 @@ const SkillsPage: React.FC = () => {
               key={idx}
               style={{
                 margin: 0,
-                fontSize: "13px",
+                fontSize: "14px",
                 lineHeight: "1.6",
                 color: "#bbb",
                 wordBreak: "break-word",
@@ -282,7 +282,7 @@ const SkillsPage: React.FC = () => {
           border-radius: 4px;
           border: 1px solid #1a1a1a;
           transition: all 0.12s ease;
-          font-size: 13px;
+          font-size: 14px;
           color: #aaa;
           background: #0d0d0d;
           margin-bottom: 6px;
@@ -305,7 +305,7 @@ const SkillsPage: React.FC = () => {
           background: #00ff151a;
           color: #00ff15;
           font-weight: bold;
-          font-size: 13px;
+          font-size: 14px;
           font-family: monospace;
           margin-bottom: 8px;
           transition: all 0.15s ease;
@@ -326,7 +326,7 @@ const SkillsPage: React.FC = () => {
 
       {/* Верхняя навигация */}
       <div style={{ maxWidth: "1100px", margin: "0 auto 16px auto", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #1f1f1f", paddingBottom: "10px", flexWrap: "wrap", gap: "10px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "13px", letterSpacing: "1px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "14px", letterSpacing: "1px" }}>
           <span style={{ color: "#00ff15", fontWeight: "bold" }}>
             СКИЛЛЫ И АЧИВКИ ({skills.length})
           </span>
@@ -340,7 +340,7 @@ const SkillsPage: React.FC = () => {
               border: `1px solid ${showMindset ? "#00ff15" : "#333"}`,
               color: showMindset ? "#00ff15" : "#aaa",
               padding: "6px 12px",
-              fontSize: "12px",
+              fontSize: "14px",
               cursor: "pointer",
               fontFamily: "monospace",
               borderRadius: "4px",
@@ -403,7 +403,7 @@ const SkillsPage: React.FC = () => {
                         </div>
                       </div>
 
-                      <span style={{ color: isOpen ? "#00ff15" : "#666", fontSize: "12px", fontWeight: "bold", minWidth: "16px", textAlign: "right" }}>
+                      <span style={{ color: isOpen ? "#00ff15" : "#666", fontSize: "14px", fontWeight: "bold", minWidth: "16px", textAlign: "right" }}>
                         {isOpen ? "▲" : "▼"}
                       </span>
                     </div>
@@ -412,7 +412,7 @@ const SkillsPage: React.FC = () => {
                     {isOpen && (
                       <div
                         style={{
-                          fontSize: "13px",
+                          fontSize: "14px",
                           color: "#8c8c8c",
                           padding: "0 12px 12px 12px",
                           borderTop: "1px solid #1a1a1a",
@@ -467,12 +467,12 @@ const SkillsPage: React.FC = () => {
                   onClick={() => setSelectedSkill(skill)}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ color: "#00ff15", fontSize: "11px" }}>&gt;</span>
+                    <span style={{ color: "#00ff15", fontSize: "14px" }}>&gt;</span>
                     <span>{skill.title}</span>
                   </div>
                   <span
                     style={{
-                      fontSize: "11px",
+                      fontSize: "14px",
                       fontWeight: "bold",
                       color: skill.level >= 8 ? "#00ff15" : skill.level >= 5 ? "#3498db" : "#888",
                       backgroundColor: "#111",
@@ -503,7 +503,7 @@ const SkillsPage: React.FC = () => {
               {/* Заголовок */}
               <div style={{ borderBottom: "1px solid #1c1c1c", paddingBottom: "12px", marginBottom: "14px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "10px", color: "#666", letterSpacing: "1px", textTransform: "uppercase" }}>
+                  <span style={{ fontSize: "14px", color: "#666", letterSpacing: "1px", textTransform: "uppercase" }}>
                     НАВЫК
                   </span>
                   <button
@@ -514,7 +514,7 @@ const SkillsPage: React.FC = () => {
                       color: "#3498db",
                       padding: "2px 8px",
                       borderRadius: "3px",
-                      fontSize: "11px",
+                      fontSize: "14px",
                       cursor: "pointer",
                       fontFamily: "monospace",
                     }}
@@ -529,9 +529,9 @@ const SkillsPage: React.FC = () => {
 
                 {/* Шкала мастерства 0..10 с кнопками апгрейда */}
                 <div style={{ marginTop: "12px", backgroundColor: "#111", padding: "10px", borderRadius: "4px", border: "1px solid #1c1c1c" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", marginBottom: "6px", color: "#888" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "14px", marginBottom: "6px", color: "#888" }}>
                     <span>УРОВЕНЬ ПОНИМАНИЯ (LVL)</span>
-                    <span style={{ color: "#00ff15", fontWeight: "bold", fontSize: "13px" }}>
+                    <span style={{ color: "#00ff15", fontWeight: "bold", fontSize: "14px" }}>
                       {selectedSkill.level} / 10
                     </span>
                   </div>
@@ -561,7 +561,7 @@ const SkillsPage: React.FC = () => {
                           color: selectedSkill.level <= 0 ? "#444" : "#aaa",
                           padding: "2px 8px",
                           borderRadius: "3px",
-                          fontSize: "12px",
+                          fontSize: "14px",
                           cursor: selectedSkill.level <= 0 ? "not-allowed" : "pointer",
                           fontFamily: "monospace",
                         }}
@@ -577,7 +577,7 @@ const SkillsPage: React.FC = () => {
                           color: selectedSkill.level >= 10 ? "#444" : "#00ff15",
                           padding: "2px 8px",
                           borderRadius: "3px",
-                          fontSize: "12px",
+                          fontSize: "14px",
                           fontWeight: "bold",
                           cursor: selectedSkill.level >= 10 ? "not-allowed" : "pointer",
                           fontFamily: "monospace",
@@ -587,7 +587,7 @@ const SkillsPage: React.FC = () => {
                       </button>
                     </div>
 
-                    <span style={{ fontSize: "10px", color: "#666" }}>
+                    <span style={{ fontSize: "14px", color: "#666" }}>
                       {selectedSkill.level >= 8 ? "МАСТЕР" : selectedSkill.level >= 5 ? "ПРАКТИК" : "БАЗА"}
                     </span>
                   </div>
@@ -596,7 +596,7 @@ const SkillsPage: React.FC = () => {
 
               {/* Описание сути */}
               <div style={{ marginBottom: "20px" }}>
-                <span style={{ fontSize: "10px", color: "#666", letterSpacing: "1px", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>
+                <span style={{ fontSize: "14px", color: "#666", letterSpacing: "1px", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>
                   СУТЬ & ПРАКТИЧЕСКИЙ ОПЫТ:
                 </span>
                 <div style={{ backgroundColor: "#111", padding: "12px", borderRadius: "4px", border: "1px solid #1c1c1c" }}>
@@ -606,14 +606,14 @@ const SkillsPage: React.FC = () => {
 
               {/* Нижняя панель действий */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1c1c1c", paddingTop: "12px" }}>
-                <span style={{ fontSize: "11px", color: "#00ff15" }}></span>
+                <span style={{ fontSize: "14px", color: "#00ff15" }}></span>
                 <button
                   onClick={() => handleDeleteSkill(selectedSkill.id)}
                   style={{
                     background: "none",
                     border: "none",
                     color: "#ff4d4d",
-                    fontSize: "11px",
+                    fontSize: "14px",
                     cursor: "pointer",
                     textDecoration: "underline",
                     fontFamily: "monospace",
@@ -661,7 +661,7 @@ const SkillsPage: React.FC = () => {
             </h3>
 
             <div style={{ marginBottom: "12px" }}>
-              <label style={{ display: "block", fontSize: "11px", color: "#888", marginBottom: "4px" }}>
+              <label style={{ display: "block", fontSize: "14px", color: "#888", marginBottom: "4px" }}>
                 НАЗВАНИЕ:
               </label>
               <input
@@ -676,10 +676,10 @@ const SkillsPage: React.FC = () => {
             {/* Ползунок уровня от 0 до 10 */}
             <div style={{ marginBottom: "14px", backgroundColor: "#121212", padding: "10px", borderRadius: "4px", border: "1px solid #222" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                <label style={{ fontSize: "11px", color: "#aaa" }}>
+                <label style={{ fontSize: "14px", color: "#aaa" }}>
                   УРОВЕНЬ ПОНИМАНИЯ (LVL):
                 </label>
-                <span style={{ fontSize: "13px", fontWeight: "bold", color: "#00ff15" }}>
+                <span style={{ fontSize: "14px", fontWeight: "bold", color: "#00ff15" }}>
                   {formLevel} / 10
                 </span>
               </div>
@@ -692,7 +692,7 @@ const SkillsPage: React.FC = () => {
                 onChange={(e) => setFormLevel(Number(e.target.value))}
                 style={{ width: "100%", cursor: "pointer", accentColor: "#00ff15" }}
               />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "9px", color: "#555", marginTop: "2px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", color: "#555", marginTop: "2px" }}>
                 <span>0 (База)</span>
                 <span>5 (Практик)</span>
                 <span>10 (Мастер)</span>
@@ -700,7 +700,7 @@ const SkillsPage: React.FC = () => {
             </div>
 
             <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", fontSize: "11px", color: "#888", marginBottom: "4px" }}>
+              <label style={{ display: "block", fontSize: "14px", color: "#888", marginBottom: "4px" }}>
                 СУТЬ & ОПЫТ (ССЫЛКИ НА ФОТО ВСТАВЛЯЙ ОТДЕЛЬНОЙ СТРОКОЙ):
               </label>
               <textarea

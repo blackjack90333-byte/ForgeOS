@@ -118,7 +118,7 @@ export const ForgeLoader: React.FC<ForgeLoaderProps> = ({
       </div>
 
       {subtitle && (
-        <span style={{ color: "#666", fontSize: "11px", letterSpacing: "1px", marginBottom: "16px" }}>
+        <span style={{ color: "#666", fontSize: "14px", letterSpacing: "1px", marginBottom: "16px" }}>
           {subtitle}
         </span>
       )}
@@ -126,7 +126,7 @@ export const ForgeLoader: React.FC<ForgeLoaderProps> = ({
       {/* Бегущая строка логов */}
       <div
         style={{
-          fontSize: "12px",
+          fontSize: "14px",
           color: accentColor,
           letterSpacing: "0.8px",
           backgroundColor: "#0d1a0e",

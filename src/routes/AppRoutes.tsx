@@ -15,6 +15,7 @@ import QuestPage from "../pages/Quest__page";
 import SkillsPage from "../pages/Skills__page";
 import BackgroundAudioPlayer from "../components/BackgroundAudioPlayer";
 import LoopWorkoutPage from "../pages/LoopWorkout__page";
+import BlockRoutinePage from "../pages/BlockRoutine__page";
 
 export interface AppRouteItem {
   path: string;
@@ -141,6 +142,14 @@ const routeConfig: AppRouteItem[] = [
     isPrivate: true,
     isVisibleWhenLoggined: true,
     label: "Мои скиллы и ачивки",
+  },
+  // В массив routeConfig:
+  {
+    path: "/block_routine_page",
+    element: <BlockRoutinePage />,
+    isPrivate: true,
+    isVisibleWhenLoggined: true,
+    label: "Модульная Рутина (Блоки)",
   },
   {
     path: "/loop_workout_page",

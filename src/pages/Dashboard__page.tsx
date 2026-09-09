@@ -274,7 +274,7 @@ const DashboardPage: React.FC = () => {
             </h2>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginTop: "6px" }}>
               <div style={{ height: "1px", width: "45px", background: "linear-gradient(90deg, transparent, #f0932b)" }} />
-              <span style={{ color: "#f0932b", fontSize: "12px" }}>◈</span>
+              <span style={{ color: "#f0932b", fontSize: "14px" }}>◈</span>
               <div style={{ height: "1px", width: "45px", background: "linear-gradient(270deg, transparent, #f0932b)" }} />
             </div>
           </div>
@@ -285,7 +285,7 @@ const DashboardPage: React.FC = () => {
               <span>УРОВЕНЬ <span style={{ color: "#f0932b" }}>{characterLvl}</span></span>
               <span style={{ color: "#f0932b" }}>Очки опыта {skillsCount}</span>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#8a91a0", marginBottom: "6px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", color: "#8a91a0", marginBottom: "6px" }}>
               <span>Опыт {currentExp} т.</span>
               <span>/ {maxExp} т.</span>
             </div>
@@ -305,7 +305,7 @@ const DashboardPage: React.FC = () => {
           {/* ХАРАКТЕРИСТИКИ */}
           <div style={{ borderBottom: "1px solid #1a1e28", paddingBottom: "14px", marginBottom: "16px" }}>
             <div className="gothic_section_header" style={{ color: "#8a91a0" }}>ХАРАКТЕРИСТИКИ</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 16px", fontSize: "13px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 16px", fontSize: "14px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px dashed #1a1e28", paddingBottom: "3px" }}>
                 <span style={{ color: "#8a91a0" }}>Здоровье</span>
                 <span style={{ color: "#ff4d4d", fontWeight: "bold" }}>999/999</span>
@@ -339,7 +339,7 @@ const DashboardPage: React.FC = () => {
                 <span style={{ color: "#00ff15" }}>⚡</span>
                 <span>Трекер воздержания (NoFap)</span>
               </span>
-              <span style={{ color: "#00ff15", fontSize: "12px", fontWeight: "bold" }}>{liveTimeStr}</span>
+              <span style={{ color: "#00ff15", fontSize: "14px", fontWeight: "bold" }}>{liveTimeStr}</span>
             </div>
           </div>
 
@@ -352,7 +352,7 @@ const DashboardPage: React.FC = () => {
                 <span style={{ color: "#3498db" }}>⚔️</span>
                 <span>Физическое состояние & Замеры</span>
               </span>
-              <span style={{ color: bodyStatus ? bodyStatus.color : "#3498db", fontSize: "12px", fontWeight: "bold" }}>
+              <span style={{ color: bodyStatus ? bodyStatus.color : "#3498db", fontSize: "14px", fontWeight: "bold" }}>
                 {bodyStatus ? bodyStatus.title : "Замеры"}
               </span>
             </div>
@@ -362,7 +362,7 @@ const DashboardPage: React.FC = () => {
                 <span style={{ color: "#3498db" }}>⏱️</span>
                 <span>Loop Тренировка (Таймер)</span>
               </span>
-              <span style={{ color: "#3498db", fontSize: "12px", fontWeight: "bold" }}>Конструктор</span>
+              <span style={{ color: "#3498db", fontSize: "14px", fontWeight: "bold" }}>Конструктор</span>
             </div>
           </div>
 
@@ -374,7 +374,7 @@ const DashboardPage: React.FC = () => {
                 <span style={{ color: "#f1c40f" }}>💰</span>
                 <span>Управление капиталом & Цели</span>
               </span>
-              <span style={{ color: "#f1c40f", fontSize: "12px", fontWeight: "bold" }}>
+              <span style={{ color: "#f1c40f", fontSize: "14px", fontWeight: "bold" }}>
                 {moneySum.toLocaleString("ru-RU")} ₽
               </span>
             </div>
@@ -390,7 +390,7 @@ const DashboardPage: React.FC = () => {
                   <span style={{ color: "#f0932b" }}>📋</span>
                   <span>Матрица задач</span>
                 </span>
-                <span style={{ color: pendingTasksCount > 0 ? "#ff7675" : "#55e06a", fontSize: "12px", fontWeight: "bold" }}>
+                <span style={{ color: pendingTasksCount > 0 ? "#ff7675" : "#55e06a", fontSize: "14px", fontWeight: "bold" }}>
                   {pendingTasksCount > 0 ? `${pendingTasksCount} в работе` : "Чисто"}
                 </span>
               </div>
@@ -400,7 +400,7 @@ const DashboardPage: React.FC = () => {
                   <span style={{ color: "#f0932b" }}>🎯</span>
                   <span>Квесты потока (Рутина)</span>
                 </span>
-                <span style={{ color: "#f0932b", fontSize: "12px", fontWeight: "bold" }}>Раннер</span>
+                <span style={{ color: "#f0932b", fontSize: "14px", fontWeight: "bold" }}>Раннер</span>
               </div>
 
               <div className="gothic_skill_row btn_tasks" onClick={() => navigate("/skills_page")}>
@@ -408,7 +408,16 @@ const DashboardPage: React.FC = () => {
                   <span style={{ color: "#f0932b" }}>🧠</span>
                   <span>Скиллы & База достижений</span>
                 </span>
-                <span style={{ color: "#f0932b", fontSize: "12px", fontWeight: "bold" }}>{skillsCount} освоено</span>
+                <span style={{ color: "#f0932b", fontSize: "14px", fontWeight: "bold" }}>{skillsCount} освоено</span>
+              </div>
+
+
+              <div className="gothic_skill_row btn_tasks" onClick={() => navigate("/block_routine_page")}>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ color: "#f0932b" }}>🧱</span>
+                  <span>Конструктор рутины (Блоки)</span>
+                </span>
+                <span style={{ color: "#f0932b", fontSize: "14px", fontWeight: "bold" }}>Модули</span>
               </div>
             </div>
           </div>
@@ -470,7 +479,7 @@ const DashboardPage: React.FC = () => {
                     background: "linear-gradient(180deg, #181b24 0%, #10121a 100%)",
                     border: "1px solid #2d3345",
                     color: "#f0932b",
-                    fontSize: "11px",
+                    fontSize: "14px",
                     padding: "7px 16px",
                     cursor: "pointer",
                     borderRadius: "4px",
@@ -505,7 +514,7 @@ const DashboardPage: React.FC = () => {
                       border: "1px solid #2d3345",
                       color: "#fff",
                       padding: "8px 10px",
-                      fontSize: "12px",
+                      fontSize: "14px",
                       fontFamily: "monospace, sans-serif",
                       borderRadius: "4px",
                       outline: "none",
@@ -519,7 +528,7 @@ const DashboardPage: React.FC = () => {
                       style={{
                         backgroundColor: "#f0932b",
                         color: "#000",
-                        fontSize: "11px",
+                        fontSize: "14px",
                         padding: "6px 14px",
                         fontWeight: "bold",
                         fontFamily: "monospace, sans-serif",
@@ -534,7 +543,7 @@ const DashboardPage: React.FC = () => {
                         backgroundColor: "#161922",
                         border: "1px solid #2a2f3f",
                         color: "#8a91a0",
-                        fontSize: "11px",
+                        fontSize: "14px",
                         padding: "6px 12px",
                         cursor: "pointer",
                         fontFamily: "monospace, sans-serif",

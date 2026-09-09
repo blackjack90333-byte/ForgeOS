@@ -66,6 +66,47 @@ export interface SkillAchievement {
 //   money_goals?: string;   // сериализованный JSON массив MoneyGoal[]
 // }
 
+// export interface RoutineBlock {
+//   id: string;
+//   title: string;
+//   tag: string;
+//   items: string[];
+// }
+
+export type RoutineTag =
+  | "СПОРТ"
+  | "ГИГИЕНА"
+  | "РАЗУМ"
+  | "ЗДОРОВЬЕ"
+  | "ДИСЦИПЛИНА"
+  | "ДОФАМИН"
+  | "ФИНАНСЫ"
+  | "ПРОЧЕЕ";
+
+export interface RoutineBlock {
+  id: string;
+  title: string;
+  tag: RoutineTag | string;
+  items: string[];
+  benefits?: string[]; // <--- список профитов / почему это стоит делать
+}
+
+export interface RoutineRunnerState {
+  blocksLibrary: RoutineBlock[];
+  selectedBlockIds: string[];
+  activeStepIndex: number;
+  completedItems: string[];
+  isRunning: boolean;
+  historyDates?: string[]; // <--- храним даты прямо здесь
+}
+
+// В UserDocument:
+export interface UserDocument {
+  // ... твои поля
+  block_routine_data?: string; // JSON строка RoutineRunnerState
+}
+
+
 export interface WorkoutExerciseItem {
   id: string;
   name: string;

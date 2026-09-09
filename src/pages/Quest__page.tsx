@@ -269,7 +269,7 @@ const QuestPage: React.FC = () => {
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "#888", textTransform: "uppercase" }}>Внешняя база квестов:</span>
+          <span style={{ fontSize: "14px", color: "#888", textTransform: "uppercase" }}>Внешняя база квестов:</span>
           <div style={{ color: "#fff", fontSize: "14px", fontWeight: "bold" }}>Life Quests Portal</div>
         </div>
         <a
@@ -282,7 +282,7 @@ const QuestPage: React.FC = () => {
             textDecoration: "none",
             padding: "6px 14px",
             borderRadius: "4px",
-            fontSize: "12px",
+            fontSize: "14px",
             fontWeight: "bold",
           }}
         >
@@ -303,7 +303,7 @@ const QuestPage: React.FC = () => {
                 color: "#aaa",
                 padding: "4px 10px",
                 borderRadius: "4px",
-                fontSize: "12px",
+                fontSize: "14px",
                 cursor: "pointer",
               }}
             >
@@ -311,7 +311,7 @@ const QuestPage: React.FC = () => {
             </button>
           </div>
 
-          <p style={{ color: "#888", fontSize: "13px", margin: "0 0 12px 0" }}>
+          <p style={{ color: "#888", fontSize: "14px", margin: "0 0 12px 0" }}>
             Первая строка станет <strong>названием квеста</strong>. Каждая следующая строка — <strong>отдельным шагом</strong>, который ты будешь закрывать по очереди.
           </p>
 
@@ -366,7 +366,7 @@ const QuestPage: React.FC = () => {
               <span style={{ color: "#00ff15", fontWeight: "bold", fontSize: "14px", letterSpacing: "1px" }}>
                 🎯 {questTitle}
               </span>
-              <span style={{ color: "#888", fontSize: "13px", fontFamily: "monospace" }}>
+              <span style={{ color: "#888", fontSize: "14px", fontFamily: "monospace" }}>
                 Шаг {currentStepIndex + 1} из {totalSteps} ({progressPercent}%)
               </span>
             </div>
@@ -385,10 +385,10 @@ const QuestPage: React.FC = () => {
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "12px", color: "#666" }}>Очки дисциплины: +{completedSteps.length * 100} XP</span>
+              <span style={{ fontSize: "14px", color: "#666" }}>Очки дисциплины: +{completedSteps.length * 100} XP</span>
               <button
                 onClick={handleResetQuest}
-                style={{ background: "none", border: "none", color: "#555", fontSize: "12px", cursor: "pointer", textDecoration: "underline" }}
+                style={{ background: "none", border: "none", color: "#555", fontSize: "14px", cursor: "pointer", textDecoration: "underline" }}
               >
                 Прервать / Настроить квест
               </button>
@@ -406,7 +406,7 @@ const QuestPage: React.FC = () => {
               boxShadow: "0 0 20px rgba(0, 255, 21, 0.08)",
             }}
           >
-            <div style={{ fontSize: "11px", color: "#00ff15", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "8px", fontWeight: "bold" }}>
+            <div style={{ fontSize: "14px", color: "#00ff15", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "8px", fontWeight: "bold" }}>
               ▶ ТЕКУЩАЯ ЗАДАЧА // ВЫПОЛНИ СЕЙЧАС:
             </div>
 
@@ -468,7 +468,7 @@ const QuestPage: React.FC = () => {
           {/* Следующая задача на горизонте */}
           {currentStepIndex + 1 < totalSteps && (
             <div style={{ backgroundColor: "#111", border: "1px dashed #2a2a2a", borderRadius: "6px", padding: "12px 16px", marginBottom: "20px" }}>
-              <span style={{ fontSize: "11px", color: "#666", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>
+              <span style={{ fontSize: "14px", color: "#666", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>
                 Следом по плану:
               </span>
               <span style={{ color: "#888", fontSize: "14px" }}>{steps[currentStepIndex + 1]}</span>
@@ -478,7 +478,7 @@ const QuestPage: React.FC = () => {
           {/* История закрытых шагов */}
           {completedSteps.length > 0 && (
             <div style={{ marginTop: "30px" }}>
-              <h3 style={{ fontSize: "13px", color: "#555", textTransform: "uppercase", marginBottom: "10px", letterSpacing: "1px" }}>
+              <h3 style={{ fontSize: "14px", color: "#555", textTransform: "uppercase", marginBottom: "10px", letterSpacing: "1px" }}>
                 Выполнено в этом квесте ({completedSteps.length}):
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -491,7 +491,7 @@ const QuestPage: React.FC = () => {
                       borderRadius: "4px",
                       padding: "8px 12px",
                       color: "#555",
-                      fontSize: "13px",
+                      fontSize: "14px",
                       textDecoration: "line-through",
                     }}
                   >

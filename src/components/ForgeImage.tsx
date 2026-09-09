@@ -79,7 +79,7 @@ export const ForgeImage: React.FC<ForgeImageProps> = ({
           <span
             style={{
               fontFamily: "monospace",
-              fontSize: "11px",
+              fontSize: "14px",
               color: "#00ff15",
               letterSpacing: "1px",
             }}
@@ -95,7 +95,7 @@ export const ForgeImage: React.FC<ForgeImageProps> = ({
           style={{
             color: "#ff4d4d",
             fontFamily: "monospace",
-            fontSize: "12px",
+            fontSize: "14px",
             padding: "10px",
             textAlign: "center",
           }}

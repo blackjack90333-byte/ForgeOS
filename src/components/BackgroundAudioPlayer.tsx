@@ -113,7 +113,7 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
           background: "none",
           border: "none",
           color: isPlaying ? "#00ff15" : "#888",
-          fontSize: "13px",
+          fontSize: "14px",
           cursor: isReady ? "pointer" : "not-allowed",
           display: "flex",
           alignItems: "center",
@@ -127,7 +127,7 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
 
       <span
         style={{
-          fontSize: "11px",
+          fontSize: "14px",
           color: isPlaying ? "#00ff15" : "#777",
           fontWeight: "bold",
           userSelect: "none",
@@ -152,7 +152,7 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
             height: "4px",
           }}
         />
-        <span style={{ fontSize: "10px", color: "#888", minWidth: "24px" }}>
+        <span style={{ fontSize: "14px", color: "#888", minWidth: "24px" }}>
           {volume}%
         </span>
       </div>

@@ -13,7 +13,7 @@ interface NofapBuffsProps {
 export const DEFAULT_EFFECT_ROWS: EffectRow[] = [
   {
     buff: "Высокий уровень витальной энергии и физического тонуса",
-    debuff: "Упадок сил, хроническая вялость и апатия",
+    debuff: "Упадок сил, хроническая вялость и апатия. Самоизоляция.",
   },
   {
     buff: "Ясность мышления, улучшение памяти и концентрации",
@@ -29,7 +29,7 @@ export const DEFAULT_EFFECT_ROWS: EffectRow[] = [
   },
   {
     buff: "Повышение уверенности в себе и снижение тревожности",
-    debuff: "Фоновая социальная тревога, стыд и неуверенность",
+    debuff: "Фоновая социальная тревога, стыд и неуверенность. Самоизоляция.",
   },
   {
     buff: "Истинное желание общаться и социализироваться",
@@ -41,7 +41,7 @@ export const DEFAULT_EFFECT_ROWS: EffectRow[] = [
   },
   {
     buff: "Возврат естественного влечения к реальным женщинам",
-    debuff: "Десенсибилизация рецепторов и потеря интереса к реальности",
+    debuff: "Десенсибилизация рецепторов и потеря интереса к реальности из-за Сексуальной стимуляции через экран",
   },
   {
     buff: "Высокая продуктивность и готовность решать задачи",
@@ -76,7 +76,7 @@ export const NofapBuffs: React.FC<NofapBuffsProps> = ({
           gridTemplateColumns: "1fr 1fr",
           backgroundColor: "#141414",
           borderBottom: "1px solid #1f1f1f",
-          fontSize: "11px",
+          fontSize: "14px",
           fontWeight: "bold",
           letterSpacing: "0.5px",
         }}
@@ -113,7 +113,7 @@ export const NofapBuffs: React.FC<NofapBuffsProps> = ({
                 gridTemplateColumns: "1fr 1fr",
                 backgroundColor: isEven ? "#0a0a0a" : "#0d0d0d",
                 borderBottom: index === rows.length - 1 ? "none" : "1px solid #161616",
-                fontSize: "12px",
+                fontSize: "14px",
                 lineHeight: "1.4",
               }}
             >
