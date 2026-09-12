@@ -8,6 +8,7 @@ import ForgeLoader from "../components/ForgeLoader";
 import RoutineTabsLibrary from "../components/RoutineTabsLibrary";
 import RoutineDropStack from "../components/RoutineDropStack";
 import RoutineHeatmap from "../components/RoutineHeatmap";
+import TaskAutoTimer from "../components/TaskAutoTimer";
 
 const LOCAL_HEATMAP_KEY = "forgeos_routine_activity_dates";
 
@@ -39,7 +40,6 @@ const DEFAULT_BLOCKS: RoutineBlock[] = [
       "Планка от 3 минут супер польза",
       "ТРЕНЯ С ГИРЕЙ КРУГОВАЯ ФУЛБАДИ",
       "200 упражнений Кегеля (контроль тазового дна)",
-      "Ведро с рисом: пронация и супинация",
     ],
   },
   {
@@ -75,6 +75,7 @@ const DEFAULT_BLOCKS: RoutineBlock[] = [
       "Работа с голосом (читать закрытым ртом)",
       "Зафиксировать дефицит калорий",
       "Обещай себе не срываться в игры и дешевый дофамин",
+      "Помни ты должен жить без сексуальной стимуляции через экран - сегодня и всегда 😎😎😎",
     ],
   },
   {
@@ -102,6 +103,7 @@ const DEFAULT_BLOCKS: RoutineBlock[] = [
     items: [
       "Вакуум 5 раз на корточках",
       "Планка от 3 минут супер польза",
+      "Треня от негра https://youtu.be/lMeB_5T3fC8",
       "200 кегеля",
       "30 приседаний",
       "30 отжиманий",
@@ -136,10 +138,50 @@ const DEFAULT_BLOCKS: RoutineBlock[] = [
       "Разгрузка зрительной коры: ясность мышления и свежая голова для работы",
     ],
     items: [
-      "Надеть перфорационные очки (с 5 дырочками)",
-      "Чтение текста 10–15 минут (держать дистанцию и четкий фокус)",
-      "Фокусировка: перевод взгляда с близкого текста на дальний горизонт (20 раз)",
-      "Пальминг 2 минуты: накрыть глаза теплыми ладонями до полной темноты",
+      "12+ минут играть в яндекс игры на мобилке с закрытым правым глазом (повязка для сна хорошо закрывает глаз)",
+      "3 минуты: медленно води пальцем по кругу, по диагоналям и «восьмеркой» (знак бесконечности)",
+      "10 повторений: Плавная конвергенция (сведение к носу)",
+      "2 минуты: Пальминг (Разотри ладони до горячего состояния)",
+    ],
+  },
+  {
+    id: "block_1788996300765",
+    title: "Лечь - проснуться в одно время",
+    tag: "ДИСЦИПЛИНА",
+    benefits: [
+      "Поток энергии: когда режим стабильный +500% к энергии",
+    ],
+    items: [
+      "Лечь в 10",
+      "Проснуться в 6",
+    ],
+  },
+  {
+    id: "block_1788996396824",
+    title: "Подготовка (покушать)",
+    tag: "ДИСЦИПЛИНА",
+    benefits: [
+      "Дисциплина ебет мотивацию, а ты с дисциплиной будешь всех ебать",
+    ],
+    items: [
+      "Схавать 50-100г овсянки",
+      "Схавать 4-5 яиц жареных",
+      "Подождать 1 час (чтобы переварилось)",
+    ],
+  },
+  {
+    id: "block_1789197309336",
+    title: "Закрыть гештальты",
+    tag: "РАЗУМ",
+    benefits: [
+      "Свободный разум",
+      "Оперативка свободна",
+    ],
+    items: [
+      "найти 3 гештальта которых сегодня закроешь (можешь искать в блокноте или мессенджерах)",
+      "1 закрыт",
+      "2 закрыт",
+      "3 закрыт",
     ],
   },
 ];
@@ -181,10 +223,13 @@ const BlockRoutinePage: React.FC = () => {
 
   const [blocksLibrary, setBlocksLibrary] = useState<RoutineBlock[]>(DEFAULT_BLOCKS);
   const [selectedBlockIds, setSelectedBlockIds] = useState<string[]>([
-    "block_not_skuf",
+    "block_1788996396824",
+    "block_eye_training",
+    "block_focus_habits",
+    "block_1788930847241",
     "block_1788930463011",
     "block_not_sherd",
-    "block_focus_habits",
+    "block_1789197309336",
   ]);
 
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -351,7 +396,6 @@ const BlockRoutinePage: React.FC = () => {
     syncToFirebase(blocksLibrary, next, isRunning, activeStepIndex, completedItems);
   };
 
-  // Старт выполнения (НЕ ЗАСЧИТЫВАЕТ ДЕНЬ ВПЕРЕД ВРЕМЕНИ!)
   const handleStartRunner = () => {
     if (compiledSteps.length === 0) return;
     setIsRunning(true);
@@ -360,7 +404,6 @@ const BlockRoutinePage: React.FC = () => {
     syncToFirebase(blocksLibrary, selectedBlockIds, true, 0, []);
   };
 
-  // Завершение шага: ДЕНЬ ЗАСЧИТЫВАЕТСЯ ТОЛЬКО ПРИ ЗАКРЫТИИ ПОСЛЕДНЕГО ШАГА!
   const handleCompleteStep = () => {
     if (!currentItem) return;
 
@@ -370,7 +413,6 @@ const BlockRoutinePage: React.FC = () => {
     setCompletedItems(newCompleted);
     setActiveStepIndex(nextIdx);
 
-    // Если это был последний шаг всего квеста — только тогда день засчитан в Heatmap
     if (nextIdx >= totalSteps) {
       const updatedDates = markTodayAsActive();
       syncToFirebase(blocksLibrary, selectedBlockIds, true, nextIdx, newCompleted, updatedDates);
@@ -383,7 +425,6 @@ const BlockRoutinePage: React.FC = () => {
     const nextIdx = activeStepIndex + 1;
     setActiveStepIndex(nextIdx);
 
-    // Если пропущен последний шаг и цепочка закончилась
     if (nextIdx >= totalSteps) {
       const updatedDates = markTodayAsActive();
       syncToFirebase(blocksLibrary, selectedBlockIds, true, nextIdx, completedItems, updatedDates);
@@ -497,7 +538,7 @@ const BlockRoutinePage: React.FC = () => {
   }
 
   // --------------------------------------------------------------------------
-  // ЭКРАН РАННЕРА (+2px)
+  // ЭКРАН РАННЕРА
   // --------------------------------------------------------------------------
   if (isRunning) {
     return (
@@ -591,12 +632,15 @@ const BlockRoutinePage: React.FC = () => {
                   lineHeight: "1.5",
                   color: "#fff",
                   fontWeight: "bold",
-                  marginBottom: "24px",
+                  marginBottom: "20px",
                   wordBreak: "break-word",
                 }}
               >
                 {renderTextWithLinks(currentItem?.task || "")}
               </div>
+
+              {/* 🔥 АВТО-ТАЙМЕР ТЕКУЩЕЙ ЗАДАЧИ */}
+              <TaskAutoTimer taskText={currentItem?.task || ""} stepIndex={activeStepIndex} />
 
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                 <button
