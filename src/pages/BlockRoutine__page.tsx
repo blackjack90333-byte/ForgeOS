@@ -404,8 +404,30 @@ const BlockRoutinePage: React.FC = () => {
     syncToFirebase(blocksLibrary, selectedBlockIds, true, 0, []);
   };
 
+  // Предзагрузка звука выполнения задачи
+  const completeSoundRef = React.useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audio = new Audio("/sound/achieve_sound.mp3");
+    audio.preload = "auto";
+    completeSoundRef.current = audio;
+  }, []);
+
+  const playAchieveSound = () => {
+    if (completeSoundRef.current) {
+      completeSoundRef.current.currentTime = 0;
+      completeSoundRef.current.play().catch(() => {
+        // браузерные ограничения на автовоспроизведение не сработают, 
+        // так как вызов происходит внутри прямого клика пользователя
+      });
+    }
+  };
+
   const handleCompleteStep = () => {
     if (!currentItem) return;
+
+    // 🔊 Проигрываем звук ачивки
+    playAchieveSound();
 
     const newCompleted = [...completedItems, currentItem.task];
     const nextIdx = activeStepIndex + 1;
