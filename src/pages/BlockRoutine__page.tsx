@@ -9,6 +9,7 @@ import RoutineTabsLibrary from "../components/RoutineTabsLibrary";
 import RoutineDropStack from "../components/RoutineDropStack";
 import RoutineHeatmap from "../components/RoutineHeatmap";
 import TaskAutoTimer from "../components/TaskAutoTimer";
+import RoutineShareReport from "../components/RoutineShareReport";
 
 const LOCAL_HEATMAP_KEY = "forgeos_routine_activity_dates";
 
@@ -612,6 +613,7 @@ const BlockRoutinePage: React.FC = () => {
             <p style={{ color: "#aaa", fontSize: "16px", margin: "0 0 20px 0" }}>
               Все <strong>{totalSteps}</strong> шагов закрыты. День зафиксирован в Heat Map!
             </p>
+
             <button
               onClick={handleResetRunner}
               style={{
@@ -628,6 +630,13 @@ const BlockRoutinePage: React.FC = () => {
             >
               ВЕРНУТЬСЯ В КОНСТРУКТОР
             </button>
+
+            {/* 📢 БЛОК ШЕРИНГА И КОПИРОВАНИЯ В ОДИН КЛИК */}
+            <RoutineShareReport
+              completedItems={completedItems}
+              totalSteps={totalSteps}
+              streakDaysCount={activeDates.length}
+            />
           </div>
         ) : (
           <div>
