@@ -230,55 +230,103 @@ const LoopWorkoutPage: React.FC = () => {
   const currentExercise = config.exercises[currentExerciseIndex];
 
   // --------------------------------------------------------------------------
-  // ЭКРАН 1: РАННЕР
+  // ЭКРАН 1: РАННЕР (ГИГАНТСКИЙ ШРИФТ ДЛЯ ПРОСМОТРА С 5 МЕТРОВ)
   // --------------------------------------------------------------------------
   if (phase !== "idle") {
-    let phaseTitle = "ПОДГОТОВКА";
+    let phaseBadge = "ПОДГОТОВКА";
     let phaseColor = "#f0932b";
-    let subText = "Приготовься к первому упражнению";
+    let bigExerciseTitle = "ГОТОВНОСТЬ К СТАРТУ";
+    let nextInfo = config.exercises[0]?.name ? `Первое: ${config.exercises[0].name}` : "";
 
     if (phase === "work") {
-      phaseTitle = `УСИЛИЕ: ${currentExercise?.name || ""}`;
+      phaseBadge = "РАБОТА // ВЫЖИМАЙ";
       phaseColor = "#00ff15";
-      subText = `Круг ${currentRound} из ${config.roundsCount} • Упражнение ${currentExerciseIndex + 1}/${config.exercises.length}`;
+      bigExerciseTitle = currentExercise?.name || "Упражнение";
+      const nextEx = config.exercises[currentExerciseIndex + 1];
+      nextInfo = nextEx
+        ? `Дальше: ${nextEx.name}`
+        : currentRound < config.roundsCount
+        ? `Дальше: Отдых между кругами (${config.restBetweenRoundsSec}с)`
+        : "Дальше: Финал тренировки!";
     } else if (phase === "rest") {
-      phaseTitle = "ПЕРЕДЫШКА";
+      phaseBadge = "ПЕРЕДЫШКА";
       phaseColor = "#3498db";
       const nextEx = config.exercises[currentExerciseIndex + 1];
-      subText = nextEx ? `Дальше: ${nextEx.name}` : "Конец круга";
+      bigExerciseTitle = nextEx ? `ДАЛЬШЕ: ${nextEx.name}` : "КОНЕЦ КРУГА";
+      nextInfo = `Восстанови дыхание перед ${nextEx ? nextEx.name : "отдыхом"}`;
     } else if (phase === "round_rest") {
-      phaseTitle = "ОТДЫХ МЕЖДУ КРУГАМИ";
+      phaseBadge = "ОТДЫХ МЕЖДУ КРУГАМИ";
       phaseColor = "#e056fd";
-      subText = `Глоток воды. Впереди круг ${currentRound + 1} из ${config.roundsCount}`;
+      bigExerciseTitle = `ГЛОТОК ВОДЫ // КРУГ ${currentRound} ЗАКРЫТ`;
+      nextInfo = `Следующий круг: ${currentRound + 1} из ${config.roundsCount}`;
     } else if (phase === "finished") {
-      phaseTitle = "ТРЕНИРОВКА ЗАВЕРШЕНА!";
+      phaseBadge = "ПОБЕДА";
       phaseColor = "#00ff15";
-      subText = "Все круги закрыты.";
+      bigExerciseTitle = "ТРЕНИРОВКА ЗАКРЫТА!";
+      nextInfo = `Все ${config.roundsCount} кругов выполнены. Форма держится.`;
     }
 
     return (
-      <div style={{ minHeight: "100vh", backgroundColor: "#060608", padding: "16px", color: "#ddd", fontFamily: "monospace", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #222", paddingBottom: "10px" }}>
-          <div>
-            <span style={{ fontSize: "15px", fontWeight: "bold", color: "#fff", marginLeft: "6px" }}>
-              КРУГ {currentRound} / {config.roundsCount}
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#050608",
+          padding: "20px 24px",
+          color: "#fff",
+          fontFamily: "monospace",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          boxSizing: "border-box",
+        }}
+      >
+        {/* Верхняя статусная панель */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "2px solid #1a202c",
+            paddingBottom: "16px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <span
+              style={{
+                fontSize: "26px",
+                fontWeight: "900",
+                color: "#fff",
+                letterSpacing: "1px",
+              }}
+            >
+              КРУГ <span style={{ color: "#00ff15" }}>{currentRound}</span> / {config.roundsCount}
+            </span>
+            <span
+              style={{
+                fontSize: "20px",
+                fontWeight: "bold",
+                color: "#888",
+              }}
+            >
+              ({currentExerciseIndex + 1}/{config.exercises.length})
             </span>
           </div>
 
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div style={{ display: "flex", gap: "12px" }}>
             <a
               href={config.musicUrl || DEFAULT_MUSIC_URL}
               target="_blank"
               rel="noreferrer"
               style={{
-                backgroundColor: "#111",
-                border: "1px solid #f0932b",
+                backgroundColor: "#161b22",
+                border: "2px solid #f0932b",
                 color: "#f0932b",
                 textDecoration: "none",
-                padding: "6px 12px",
-                borderRadius: "4px",
-                fontSize: "14px",
-                fontWeight: "bold",
+                padding: "10px 18px",
+                borderRadius: "6px",
+                fontSize: "18px",
+                fontWeight: "900",
+                letterSpacing: "1px",
               }}
             >
               🎵 МУЗОН
@@ -287,12 +335,12 @@ const LoopWorkoutPage: React.FC = () => {
               onClick={handleStopWorkout}
               style={{
                 backgroundColor: "#2a1212",
-                border: "1px solid #ff4d4d",
+                border: "2px solid #ff4d4d",
                 color: "#ff4d4d",
-                padding: "6px 12px",
-                borderRadius: "4px",
-                fontSize: "14px",
-                fontWeight: "bold",
+                padding: "10px 18px",
+                borderRadius: "6px",
+                fontSize: "18px",
+                fontWeight: "900",
                 cursor: "pointer",
                 fontFamily: "monospace",
               }}
@@ -302,44 +350,99 @@ const LoopWorkoutPage: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ textAlign: "center", margin: "auto 0" }}>
-          <div style={{ fontSize: "17px", color: phaseColor, letterSpacing: "1.5px", fontWeight: "bold", marginBottom: "8px", textTransform: "uppercase" }}>
-            {phaseTitle}
-          </div>
-
+        {/* ЦЕНТРАЛЬНАЯ ЗОНА: БОЛЬШОЙ ТЕКСТ И ЦИФРЫ ДЛЯ ДИСТАНЦИИ В 5 МЕТРОВ */}
+        <div style={{ textAlign: "center", margin: "auto 0", padding: "10px 0" }}>
+          {/* Бейдж фазы */}
           <div
             style={{
-              fontSize: "clamp(72px, 20vw, 140px)",
-              fontWeight: "bold",
+              display: "inline-block",
+              fontSize: "22px",
               color: phaseColor,
-              lineHeight: "1",
+              backgroundColor: `${phaseColor}18`,
+              border: `2px solid ${phaseColor}`,
+              padding: "6px 20px",
+              borderRadius: "6px",
+              letterSpacing: "2px",
+              fontWeight: "900",
+              marginBottom: "20px",
+              textTransform: "uppercase",
+            }}
+          >
+            {phaseBadge}
+          </div>
+
+          {/* ГИГАНТСКОЕ НАЗВАНИЕ УПРАЖНЕНИЯ */}
+          <div
+            style={{
+              fontSize: "clamp(34px, 5.5vw, 68px)",
+              fontWeight: "900",
+              color: "#fff",
+              lineHeight: "1.15",
+              letterSpacing: "0.5px",
+              maxWidth: "1100px",
+              margin: "0 auto 16px auto",
+              textShadow: "0 2px 14px rgba(0,0,0,0.8)",
+              wordBreak: "break-word",
+            }}
+          >
+            {bigExerciseTitle}
+          </div>
+
+          {/* ГИГАНТСКИЙ ТАЙМЕР */}
+          <div
+            style={{
+              fontSize: "clamp(100px, 24vw, 190px)",
+              fontWeight: "900",
+              color: phaseColor,
+              lineHeight: "0.95",
               fontFamily: "monospace",
-              textShadow: `0 0 30px ${phaseColor}44`,
+              textShadow: `0 0 40px ${phaseColor}66`,
+              margin: "10px 0",
+              userSelect: "none",
             }}
           >
             {secondsLeft}s
           </div>
 
-          <div style={{ fontSize: "15px", color: "#aaa", marginTop: "14px", maxWidth: "560px", margin: "14px auto 0 auto", lineHeight: "1.4" }}>
-            {subText}
+          {/* КРУПНАЯ СТРОКА: ЧТО БУДЕТ ДАЛЬШЕ */}
+          <div
+            style={{
+              fontSize: "clamp(20px, 2.8vw, 32px)",
+              fontWeight: "bold",
+              color: "#94a3b8",
+              marginTop: "16px",
+              lineHeight: "1.3",
+            }}
+          >
+            {nextInfo}
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: "12px", borderTop: "1px solid #222", paddingTop: "14px" }}>
+        {/* НИЖНЯЯ ПАНЕЛЬ УПРАВЛЕНИЯ */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "16px",
+            borderTop: "2px solid #1a202c",
+            paddingTop: "20px",
+          }}
+        >
           {phase !== "finished" ? (
             <>
               <button
                 onClick={() => setIsPaused(!isPaused)}
                 style={{
-                  backgroundColor: isPaused ? "#00ff15" : "#1a1a1a",
+                  backgroundColor: isPaused ? "#00ff15" : "#1a1f2c",
                   color: isPaused ? "#000" : "#fff",
-                  border: "1px solid #333",
-                  padding: "12px 24px",
-                  borderRadius: "6px",
-                  fontSize: "15px",
-                  fontWeight: "bold",
+                  border: "2px solid #334155",
+                  padding: "16px 36px",
+                  borderRadius: "8px",
+                  fontSize: "20px",
+                  fontWeight: "900",
                   cursor: "pointer",
                   fontFamily: "monospace",
+                  letterSpacing: "1px",
                 }}
               >
                 {isPaused ? "▶ ПРОДОЛЖИТЬ" : "❚❚ ПАУЗА"}
@@ -348,13 +451,13 @@ const LoopWorkoutPage: React.FC = () => {
               <button
                 onClick={handlePhaseTransition}
                 style={{
-                  backgroundColor: "#111",
-                  border: "1px solid #444",
-                  color: "#aaa",
-                  padding: "12px 20px",
-                  borderRadius: "6px",
-                  fontSize: "15px",
-                  fontWeight: "bold",
+                  backgroundColor: "#161b22",
+                  border: "2px solid #475569",
+                  color: "#cbd5e1",
+                  padding: "16px 28px",
+                  borderRadius: "8px",
+                  fontSize: "20px",
+                  fontWeight: "900",
                   cursor: "pointer",
                   fontFamily: "monospace",
                 }}
@@ -369,15 +472,16 @@ const LoopWorkoutPage: React.FC = () => {
                 backgroundColor: "#00ff15",
                 color: "#000",
                 border: "none",
-                padding: "12px 28px",
-                borderRadius: "6px",
-                fontSize: "15px",
-                fontWeight: "bold",
+                padding: "18px 48px",
+                borderRadius: "8px",
+                fontSize: "22px",
+                fontWeight: "900",
                 cursor: "pointer",
                 fontFamily: "monospace",
+                letterSpacing: "1px",
               }}
             >
-              ЗАКРЫТЬ
+              ВЫЙТИ В РЕДАКТОР
             </button>
           )}
         </div>
@@ -386,10 +490,19 @@ const LoopWorkoutPage: React.FC = () => {
   }
 
   // --------------------------------------------------------------------------
-  // ЭКРАН 2: АДАПТИВНЫЙ РЕДАКТОР
+  // ЭКРАН 2: АДАПТИВНЫЙ РЕДАКТОР (ТАКЖЕ С УВЕЛИЧЕННЫМИ ШРИФТАМИ)
   // --------------------------------------------------------------------------
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#080808", padding: "12px 8px", color: "#ddd", fontFamily: "monospace" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#080808",
+        padding: "16px 12px",
+        color: "#ddd",
+        fontFamily: "monospace",
+        fontSize: "16px",
+      }}
+    >
       <style>{`
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
@@ -403,14 +516,29 @@ const LoopWorkoutPage: React.FC = () => {
       `}</style>
 
       {/* Шапка */}
-      <div style={{ maxWidth: "850px", margin: "0 auto 10px auto", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #1a1a1a", paddingBottom: "8px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ color: "#00ff15", fontWeight: "bold", fontSize: "15px" }}>
+      <div
+        style={{
+          maxWidth: "920px",
+          margin: "0 auto 14px auto",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          borderBottom: "1px solid #1f2533",
+          paddingBottom: "12px",
+          flexWrap: "wrap",
+          gap: "10px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <Link to="/" style={{ color: "#666", textDecoration: "none", fontSize: "16px" }}>
+            &larr; ДАШБОРД
+          </Link>
+          <span style={{ color: "#00ff15", fontWeight: "900", fontSize: "18px" }}>
             LOOP ТРЕНИРОВКА
           </span>
         </div>
 
-        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           <a
             href={config.musicUrl || DEFAULT_MUSIC_URL}
             target="_blank"
@@ -420,9 +548,9 @@ const LoopWorkoutPage: React.FC = () => {
               border: "1px solid #f0932b",
               color: "#f0932b",
               textDecoration: "none",
-              padding: "5px 10px",
+              padding: "8px 14px",
               borderRadius: "4px",
-              fontSize: "14px",
+              fontSize: "15px",
               fontWeight: "bold",
             }}
           >
@@ -434,31 +562,60 @@ const LoopWorkoutPage: React.FC = () => {
               backgroundColor: "#111",
               border: "1px solid #333",
               color: "#888",
-              padding: "5px 8px",
+              padding: "8px 12px",
               borderRadius: "4px",
-              fontSize: "14px",
+              fontSize: "15px",
               cursor: "pointer",
             }}
+            title="Изменить ссылку на музыку"
           >
             ✎
           </button>
         </div>
       </div>
 
-      <div style={{ maxWidth: "850px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "920px", margin: "0 auto" }}>
         {/* Инпут ссылки на музыку */}
         {showMusicEdit && (
-          <div style={{ backgroundColor: "#111", border: "1px solid #f0932b55", borderRadius: "6px", padding: "8px 10px", marginBottom: "10px", display: "flex", gap: "6px" }}>
+          <div
+            style={{
+              backgroundColor: "#111",
+              border: "1px solid #f0932b55",
+              borderRadius: "6px",
+              padding: "10px 12px",
+              marginBottom: "12px",
+              display: "flex",
+              gap: "8px",
+            }}
+          >
             <input
               type="text"
               placeholder="YouTube URL..."
               value={musicInput}
               onChange={(e) => setMusicInput(e.target.value)}
-              style={{ flex: 1, backgroundColor: "#161616", border: "1px solid #333", color: "#fff", padding: "6px 10px", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px" }}
+              style={{
+                flex: 1,
+                backgroundColor: "#161616",
+                border: "1px solid #333",
+                color: "#fff",
+                padding: "8px 12px",
+                borderRadius: "4px",
+                fontFamily: "monospace",
+                fontSize: "15px",
+              }}
             />
             <button
               onClick={handleSaveMusicUrl}
-              style={{ backgroundColor: "#f0932b", color: "#000", border: "none", padding: "6px 14px", fontWeight: "bold", fontSize: "14px", cursor: "pointer", borderRadius: "4px" }}
+              style={{
+                backgroundColor: "#f0932b",
+                color: "#000",
+                border: "none",
+                padding: "8px 16px",
+                fontWeight: "bold",
+                fontSize: "15px",
+                cursor: "pointer",
+                borderRadius: "4px",
+              }}
             >
               OK
             </button>
@@ -468,21 +625,21 @@ const LoopWorkoutPage: React.FC = () => {
         {/* Панель настроек тренировки */}
         <div
           style={{
-            backgroundColor: "#0d0d0d",
-            border: "1px solid #1c1c1c",
+            backgroundColor: "#0d0f14",
+            border: "1px solid #1c2230",
             borderRadius: "6px",
-            padding: "10px 12px",
-            marginBottom: "10px",
+            padding: "14px 16px",
+            marginBottom: "14px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             flexWrap: "wrap",
-            gap: "10px",
+            gap: "14px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-              <span style={{ fontSize: "14px", color: "#888", fontWeight: "bold" }}>КРУГОВ:</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ fontSize: "15px", color: "#888", fontWeight: "bold" }}>КРУГОВ:</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -496,12 +653,23 @@ const LoopWorkoutPage: React.FC = () => {
                     roundsCount: parseSafeInt(e.target.value, 1),
                   })
                 }
-                style={{ width: "42px", padding: "4px", backgroundColor: "#141414", border: "1px solid #333", color: "#00ff15", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px", textAlign: "center" }}
+                style={{
+                  width: "50px",
+                  padding: "6px",
+                  backgroundColor: "#141722",
+                  border: "1px solid #333",
+                  color: "#00ff15",
+                  fontWeight: "bold",
+                  borderRadius: "4px",
+                  fontFamily: "monospace",
+                  fontSize: "16px",
+                  textAlign: "center",
+                }}
               />
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-              <span style={{ fontSize: "14px", color: "#888", fontWeight: "bold" }}>ОТДЫХ:</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ fontSize: "15px", color: "#888", fontWeight: "bold" }}>ОТДЫХ:</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -514,13 +682,24 @@ const LoopWorkoutPage: React.FC = () => {
                     restBetweenRoundsSec: parseSafeInt(e.target.value, 0),
                   })
                 }
-                style={{ width: "48px", padding: "4px", backgroundColor: "#141414", border: "1px solid #333", color: "#3498db", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px", textAlign: "center" }}
+                style={{
+                  width: "56px",
+                  padding: "6px",
+                  backgroundColor: "#141722",
+                  border: "1px solid #333",
+                  color: "#3498db",
+                  fontWeight: "bold",
+                  borderRadius: "4px",
+                  fontFamily: "monospace",
+                  fontSize: "16px",
+                  textAlign: "center",
+                }}
               />
-              <span style={{ fontSize: "14px", color: "#666" }}>сек</span>
+              <span style={{ fontSize: "15px", color: "#666" }}>сек</span>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-              <span style={{ fontSize: "14px", color: "#888", fontWeight: "bold" }}>СТАРТ:</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ fontSize: "15px", color: "#888", fontWeight: "bold" }}>СТАРТ:</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -533,23 +712,34 @@ const LoopWorkoutPage: React.FC = () => {
                     prepareSec: parseSafeInt(e.target.value, 0),
                   })
                 }
-                style={{ width: "48px", padding: "4px", backgroundColor: "#141414", border: "1px solid #333", color: "#f0932b", fontWeight: "bold", borderRadius: "4px", fontFamily: "monospace", fontSize: "14px", textAlign: "center" }}
+                style={{
+                  width: "56px",
+                  padding: "6px",
+                  backgroundColor: "#141722",
+                  border: "1px solid #333",
+                  color: "#f0932b",
+                  fontWeight: "bold",
+                  borderRadius: "4px",
+                  fontFamily: "monospace",
+                  fontSize: "16px",
+                  textAlign: "center",
+                }}
               />
-              <span style={{ fontSize: "14px", color: "#666" }}>сек</span>
+              <span style={{ fontSize: "15px", color: "#666" }}>сек</span>
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "8px", width: "100%", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", gap: "10px", width: "100%", justifyContent: "space-between" }}>
             <button
               onClick={handleAddExercise}
               style={{
                 flex: 1,
-                backgroundColor: "#161616",
+                backgroundColor: "#12151d",
                 border: "1px solid #00ff1566",
                 color: "#00ff15",
-                padding: "8px",
+                padding: "10px",
                 borderRadius: "4px",
-                fontSize: "14px",
+                fontSize: "15px",
                 cursor: "pointer",
                 fontWeight: "bold",
                 fontFamily: "monospace",
@@ -567,11 +757,13 @@ const LoopWorkoutPage: React.FC = () => {
                 color: isWorkoutValid ? "#000" : "#666",
                 border: "none",
                 borderRadius: "4px",
-                padding: "8px 12px",
-                fontSize: "14px",
-                fontWeight: "bold",
+                padding: "10px 14px",
+                fontSize: "16px",
+                fontWeight: "900",
                 cursor: isWorkoutValid ? "pointer" : "not-allowed",
                 fontFamily: "monospace",
+                letterSpacing: "1px",
+                boxShadow: isWorkoutValid ? "0 0 16px rgba(0, 255, 21, 0.3)" : "none",
               }}
             >
               ▶ СТАРТ ({config.roundsCount} КР)
@@ -583,10 +775,10 @@ const LoopWorkoutPage: React.FC = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "24px 1fr 54px 54px 22px",
+            gridTemplateColumns: "30px 1fr 68px 68px 28px",
             alignItems: "center",
-            gap: "6px",
-            padding: "4px 8px",
+            gap: "8px",
+            padding: "6px 10px",
             fontSize: "14px",
             color: "#666",
             fontWeight: "bold",
@@ -600,22 +792,22 @@ const LoopWorkoutPage: React.FC = () => {
         </div>
 
         {/* Список строк упражнений */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           {config.exercises.map((exercise, index) => (
             <div
               key={exercise.id}
               style={{
-                backgroundColor: "#0c0c0e",
-                border: "1px solid #1c1f26",
+                backgroundColor: "#0d0f14",
+                border: "1px solid #1c2230",
                 borderRadius: "4px",
-                padding: "4px 8px",
+                padding: "6px 10px",
                 display: "grid",
-                gridTemplateColumns: "24px 1fr 54px 54px 22px",
+                gridTemplateColumns: "30px 1fr 68px 68px 28px",
                 alignItems: "center",
-                gap: "6px",
+                gap: "8px",
               }}
             >
-              <span style={{ fontSize: "14px", color: "#555", fontWeight: "bold" }}>
+              <span style={{ fontSize: "15px", color: "#555", fontWeight: "bold" }}>
                 {index + 1}
               </span>
 
@@ -629,9 +821,10 @@ const LoopWorkoutPage: React.FC = () => {
                   border: "none",
                   borderBottom: "1px solid #222",
                   color: "#fff",
-                  padding: "4px 2px",
+                  padding: "6px 4px",
                   fontFamily: "monospace",
-                  fontSize: "14px",
+                  fontSize: "15px",
+                  fontWeight: "bold",
                   width: "100%",
                   boxSizing: "border-box",
                   outline: "none",
@@ -647,13 +840,13 @@ const LoopWorkoutPage: React.FC = () => {
                 value={exercise.workSec || ""}
                 onChange={(e) => handleExerciseChange(exercise.id, "workSec", e.target.value)}
                 style={{
-                  backgroundColor: "#141416",
+                  backgroundColor: "#141722",
                   border: `1px solid ${exercise.workSec > 0 ? "#00ff1544" : "#ff4d4d"}`,
                   color: exercise.workSec > 0 ? "#00ff15" : "#ff4d4d",
-                  padding: "6px 2px",
+                  padding: "8px 2px",
                   borderRadius: "4px",
                   fontFamily: "monospace",
-                  fontSize: "14px",
+                  fontSize: "15px",
                   fontWeight: "bold",
                   textAlign: "center",
                   width: "100%",
@@ -671,13 +864,13 @@ const LoopWorkoutPage: React.FC = () => {
                 value={exercise.restSec ?? ""}
                 onChange={(e) => handleExerciseChange(exercise.id, "restSec", e.target.value)}
                 style={{
-                  backgroundColor: "#141416",
+                  backgroundColor: "#141722",
                   border: "1px solid #3498db44",
                   color: "#3498db",
-                  padding: "6px 2px",
+                  padding: "8px 2px",
                   borderRadius: "4px",
                   fontFamily: "monospace",
-                  fontSize: "14px",
+                  fontSize: "15px",
                   fontWeight: "bold",
                   textAlign: "center",
                   width: "100%",
@@ -692,7 +885,7 @@ const LoopWorkoutPage: React.FC = () => {
                   background: "none",
                   border: "none",
                   color: "#555",
-                  fontSize: "16px",
+                  fontSize: "18px",
                   cursor: "pointer",
                   padding: 0,
                   textAlign: "center",
